@@ -27,9 +27,10 @@ switch ($function) {
         $vue = "inscription";
 
         // Cette partie du code est appelée si le formulaire a été posté
-        if (isset($_POST['username']) and isset($_POST['password'])) {
+        if (isset($_POST['prenom'], $_POST['nom'], $_POST['password'], $_POST['email'])) {
             $values = [
-                'username' => $_POST['username'],
+                'prenom' => $_POST['prenom'],
+                'nom' => $_POST['nom'],
                 'email' => $_POST['email'],
                 'password' => crypterMdp($_POST['password'])
             ];
