@@ -42,7 +42,6 @@ switch ($function) {
                 $alerte = "L'inscription dans la BDD n'a pas fonctionné";
             }
             }
-        }
         break;
         
     default:
