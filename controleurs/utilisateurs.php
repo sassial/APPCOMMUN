@@ -25,6 +25,24 @@ switch ($function) {
     case 'inscription':
         //affichage de l'inscription
         $vue = "inscription";
+
+        // Cette partie du code est appelée si le formulaire a été posté
+        if (isset($_POST['username']) and isset($_POST['password'])) {
+            $values = [
+                'username' => $_POST['username'],
+                'email' => $_POST['email'],
+                'password' => crypterMdp($_POST['password'])
+            ];
+
+            // Appel à la BDD à travers une fonction du modèle.
+            $retour = ajouteUtilisateur($bdd, $values);
+            if ($retour) {
+                $alerte = "Inscription réussie";
+            } else {
+                $alerte = "L'inscription dans la BDD n'a pas fonctionné";
+            }
+            }
+        }
         break;
         
     default:
