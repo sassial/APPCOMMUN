@@ -5,10 +5,10 @@
     </a>
     <nav class="main-nav">
       <ul>
-        <li><a href="login.php">Connexion</a></li>
-        <li><a href="inscription.php">Inscription</a></li>
-        <li><a href="accueil.php#capteur">Capteur son</a></li>
-        <li><a href="autres_capteurs.php">Autres capteurs</a></li>
+        <li><a href="index.php?cible=utilisateurs&fonction=login">Connexion</a></li>
+        <li><a href="index.php?cible=utilisateurs&fonction=inscription">Inscription</a></li>
+        <li><a href="index.php?cible=utilisateurs&fonction=accueil#capteur">Capteur son</a></li>
+        <li><a href="index.php?cible=capteurs&fonction=affichage">Autres capteurs</a></li>
       </ul>
     </nav>
   </div>
