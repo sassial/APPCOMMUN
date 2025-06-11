@@ -3,7 +3,7 @@
 $host = 'localhost';      // Host name
 $user = 'root';           // Database username
 $password = '';           // Database password
-$database = 'APPFINALE'; // Database name
+$database = 'APPFINALE';  // Database name
 
 // Create connection
 $conn = new mysqli($host, $user, $password, $database);
