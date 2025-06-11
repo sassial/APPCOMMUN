@@ -1,18 +1,9 @@
 <?php
-// Database credentials
-$host = 'localhost';      // Host name
-$user = 'root';           // Database username
-$password = '';           // Database password
-$database = 'APPFINALE';  // Database name
-
-// Create connection
-$conn = new mysqli($host, $user, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+try{
+    $bdd = new PDO('mysql:host=localhost;dbname=APPFINALE;', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 }
-
-// Optional: set character set to utf8mb4
-$conn->set_charset("utf8mb4");
+catch(Exception $e)
+{
+    die('Erreur : '.$e->getMessage());
+}
 ?>

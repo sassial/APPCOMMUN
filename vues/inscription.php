@@ -16,7 +16,12 @@
   <main class="container">
     <section class="signup-card">
       <h1>Créer votre compte</h1>
-      <form action="../controleurs/utilisateurs.php?action=register" method="post" class="signup-form">
+
+      <?php if (!empty($alerte)): ?>
+        <div class="alert-message"><?= htmlspecialchars($alerte) ?></div>
+      <?php endif; ?>
+
+      <form action="index.php?cible=utilisateurs&fonction=inscription" method="post" class="signup-form">
 
         <div class="form-group">
           <label for="nom">Nom</label>
@@ -45,6 +50,7 @@
 
         <button type="submit" class="btn-submit">S’inscrire</button>
       </form>
+      
       <p class="login-link">
         Vous avez déjà un compte ? <a href="index.php?cible=utilisateurs&fonction=login">Connectez-vous</a>
       </p>

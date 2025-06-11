@@ -1,6 +1,7 @@
 <?php
 
-//on définit le nom de la table
+include("connexion.php");
+
 $table = "utilisateurs";
 
 /**
@@ -12,7 +13,7 @@ $table = "utilisateurs";
 function rechercheParNom(PDO $bdd, string $nom): array {
     
     $statement = $bdd->prepare('SELECT * FROM  utilisateurs WHERE nom = :nom');
-    $statement->bindParam(":nom", $value);
+    $statement->bindParam(":nom", $nom);
     $statement->execute();
     
     return $statement->fetchAll();
@@ -35,11 +36,12 @@ function recupereTousUtilisateurs(PDO $bdd): array {
  */
 function ajouteUtilisateur(PDO $bdd, array $utilisateur) {
     
-    $query = ' INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (:nom, :email, :mot_de_passe)';
+    $query = ' INSERT INTO utilisateurs (prenom, nom, email, password) VALUES (:prenom, :nom, :email, :password)';
     $donnees = $bdd->prepare($query);
+    $donnees->bindParam(":prenom", $utilisateur['prenom'], PDO::PARAM_STR);
     $donnees->bindParam(":nom", $utilisateur['nom'], PDO::PARAM_STR);
     $donnees->bindParam(":email", $utilisateur['email'], PDO::PARAM_STR);
-    $donnees->bindParam(":mot_de_passe", $utilisateur['mot_de_passe'], PDO::PARAM_STR);
+    $donnees->bindParam(":password", $utilisateur['password'], PDO::PARAM_STR);
     return $donnees->execute();
     
 }
