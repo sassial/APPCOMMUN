@@ -48,5 +48,16 @@
     Vous pouvez ajouter ici votre script JS qui interroge
     votre API ou WebSocket pour mettre à jour #decibel-value
   -->
+      <!-- ... (juste avant la fin du body) ... -->
+  <script>
+    const header = document.querySelector('.site-header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 10) { // Si on a scrollé de plus de 10 pixels
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+  </script>
 </body>
 </html>

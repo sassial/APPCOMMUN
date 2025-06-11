@@ -1,16 +1,21 @@
-/* styles.css */
+/* ============================================= */
+/*          STYLE.CSS - FICHIER UNIQUE           */
+/* ============================================= */
 
-/* Variables de couleur */
+/* ---------------------------------------------
+   Variables & Reset
+   --------------------------------------------- */
 :root {
   --red: #C1272D;
-  --red-dark: #a81d22;    /* version sombre pour hover */
+  --red-dark: #a81d22;
   --gold: #F0C75E;
   --navy: #1B365D;
+  --teal: #008080; /* Pour le capteur de gaz */
   --light-gray: #F7F7F7;
   --text-dark: #333;
+  --border-color: #e5e7eb;
 }
 
-/* Reset basique */
 * {
   margin: 0;
   padding: 0;
@@ -23,76 +28,88 @@ body {
   color: var(--text-dark);
   line-height: 1.6;
 }
-
 /* ---------------------------------------------
-   HEADER : logo et menu
+   Header & Footer (Communs à tout le site) - VERSION AMÉLIORÉE
    --------------------------------------------- */
-
 .site-header {
-  background-color: var(--navy);
-  padding: 0.25rem 0;      /* header plus fin, plus de padding latéral ici */
+  /* On le rend transparent par défaut */
+  background-color: transparent; 
+  padding: 0.5rem 2rem;
+  border-bottom: 1px solid transparent; /* Bordure transparente aussi */
+  box-shadow: none; /* Pas d'ombre au début */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .header-container {
-  /* on occupe toute la largeur + padding interne */
-  width: 100%;
-  max-width: none;
-  padding: 0 2rem;       
-  margin: 0;             
   display: flex;
   align-items: center;
   justify-content: space-between;
+  max-width: 1400px; /* Limite la largeur du contenu sur les grands écrans */
+  margin: 0 auto; /* Centre le contenu */
 }
 
-.logo {
-  max-height: 80px;       /* plus gros logo */
+.logo { 
+  max-height: 65px; /* Légèrement plus petit pour un look plus fin */
   width: auto;
-  margin-top: 8px;
+  transition: transform 0.2s ease-in-out;
+}
+.logo:hover {
+  transform: scale(1.05); /* Effet de zoom léger au survol */
 }
 
-/* nav identique à avant… */
-.main-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
+.main-nav ul { 
+  list-style: none; 
+  display: flex; 
+  gap: 1rem; /* Espace légèrement réduit entre les liens */
 }
 
 .main-nav a {
-  color: #fff;
-  text-decoration: none;
+  color: var(--text-dark); /* Liens en couleur texte standard sur fond blanc */
+  text-decoration: none; 
   font-weight: 600;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  padding: 0.75rem 1rem;
+  border-radius: 6px; 
+  position: relative; /* Nécessaire pour l'effet de survol */
+  transition: color 0.2s ease-in-out;
 }
 
-.main-nav a:hover,
-.main-nav a:focus {
-  background-color: rgba(255,255,255,0.1);
+.main-nav a:hover {
+  color: var(--navy); /* La couleur du texte change au survol */
 }
 
-/* menu responsive inchangé… */
-@media (max-width: 600px) {
-  .header-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .main-nav ul {
-    flex-direction: column;
-    width: 100%;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-  .main-nav a {
-    display: block;
-    width: 100%;
-    padding: 0.75rem 1rem;
-  }
+/* Effet de "soulignement" animé au survol */
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: 5px; /* Position du soulignement */
+  left: 0;
+  background-color: var(--navy);
+  transform: scaleX(0); /* Le soulignement est invisible par défaut */
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
 }
 
+.main-nav a:hover::after {
+  transform: scaleX(1); /* Le soulignement apparaît au survol */
+  transform-origin: bottom left;
+}
+
+
+.site-footer {
+  background-color: var(--navy);
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
 
 /* ---------------------------------------------
-   CONTENEUR PRINCIPAL (centrage des pages de forms)
+   Styles pour les pages "classiques" (Login, Inscription)
    --------------------------------------------- */
 .container {
   display: flex;
@@ -102,9 +119,6 @@ body {
   padding: 2rem;
 }
 
-/* ---------------------------------------------
-   SIGNUP/CLOGIN CARD
-   --------------------------------------------- */
 .signup-card {
   background: #fff;
   border-radius: 8px;
@@ -114,7 +128,200 @@ body {
   width: 100%;
   text-align: center;
 }
+/* ... (tous les autres styles pour les formulaires restent ici) ... */
 
+
+/* ---------------------------------------------
+   Styles SPÉCIFIQUES au Dashboard des capteurs
+   --------------------------------------------- */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 120px);
+  padding: 1.5rem;
+}
+
+.dashboard-container h1 {
+  font-size: 2.5rem;
+  color: var(--navy);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dashboard-grid {
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.dashboard-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card .card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dashboard-card .card-icon {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+}
+
+.dashboard-card .card-title {
+  font-size: 1.25rem;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.dashboard-card .card-content {
+  flex-grow: 1;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.dashboard-card .card-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding-right: 1.5rem;
+  border-right: 1px solid var(--border-color);
+}
+
+.dashboard-card .stat-item { text-align: right; }
+.dashboard-card .stat-value { font-size: 1.75rem; font-weight: 600; color: var(--text-dark); }
+.dashboard-card .stat-label { font-size: 0.8rem; text-transform: uppercase; color: #666; }
+.dashboard-card .card-chart-container { flex-grow: 1; position: relative; }
+
+/* ---------------------------------------------
+   STYLES POUR LA PAGE D'ACCUEIL (SECTION "HERO")
+   --------------------------------------------- */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: var(--navy);
+  color: white;
+  padding: 4rem 2rem;
+}
+
+.hero-content {
+  flex: 1 1 350px; /* Un peu plus de place pour le texte */
+  max-width: 600px;
+  padding-right: 2rem;
+}
+
+.hero-subtitle {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;  
+  font-weight: 600;      
+}
+
+.hero-title {
+  font-size: 3.5rem; /* Un peu plus grand */
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero-text {
+  font-size: 1.1rem;
+  margin-bottom: 2rem; /* Plus d'espace avant le bouton */
+  max-width: 500px; /* Limite la largeur du texte pour la lisibilité */
+}
+
+.btn-hero {
+  display: inline-block;
+  background-color: var(--gold);
+  color: var(--navy);
+  padding: 0.8rem 1.75rem;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 700;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-hero:hover {
+  background-color: #ffd97d; /* Or plus clair au survol */
+  transform: translateY(-2px);
+}
+
+.hero-image {
+  flex: 1 1 400px;
+  text-align: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* ---------------------------------------------
+   SECTION CAPTEUR (SUR LA PAGE D'ACCUEIL)
+   --------------------------------------------- */
+.sensor-section {
+  padding: 4rem 2rem;
+  background-color: #fff;
+  text-align: center;
+}
+
+.sensor-section h2 {
+  font-size: 2.5rem;
+  color: var(--navy);
+  margin-bottom: 2.5rem;
+}
+
+.sensor-card {
+  display: inline-block;
+  background: var(--light-gray);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 450px;
+  width: 100%;
+}
+
+.sensor-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+  font-size: 1.1rem;
+}
+
+.decibel-value {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-bottom: 2rem;
+}
+
+.sensor-chart {
+  border-top: 1px solid var(--border-color);
+  padding-top: 2rem;
+}
+
+.sensor-placeholder {
+  color: #666;
+  font-style: italic;
+}
+
+/* ---------------------------------------------
+   STYLES POUR LES PAGES DE FORMULAIRES (Connexion/Inscription)
+   --------------------------------------------- */
 .signup-card h1 {
   margin-bottom: 1.5rem;
   color: var(--navy);
@@ -129,20 +336,22 @@ body {
   display: block;
   margin-bottom: 0.3rem;
   font-weight: 600;
+  font-size: 0.9rem; /* Police légèrement plus petite pour les labels */
 }
 
 .signup-form input {
   width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.75rem; /* Un peu plus de padding */
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .signup-form input:focus {
   outline: none;
-  border-color: var(--red);
-  box-shadow: 0 0 0 2px rgba(193,39,45,0.2);
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.15); /* Ombre douce au focus */
 }
 
 .btn-submit {
@@ -151,19 +360,21 @@ body {
   margin-top: 1rem;
   background-color: var(--red);
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #fff;
   font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn-submit:hover {
   background-color: var(--red-dark);
+  transform: translateY(-2px);
 }
 
 .login-link {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   font-size: 0.9rem;
 }
 
@@ -177,122 +388,39 @@ body {
   text-decoration: underline;
 }
 
-/* ---------------------------------------------
-   FOOTER
-   --------------------------------------------- */
-.site-footer {
-  background-color: var(--navy);
-  color: #fff;
-  text-align: center;
+/* Styles pour les messages d'alerte */
+.alert, .alert-message {
   padding: 1rem;
-  font-size: 0.9rem;
-}
-
-/* ---------------------------------------------
-   HERO SECTION
-   --------------------------------------------- */
-.hero {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  background-color: var(--navy);
-  color: white;
-  padding: 2rem 2rem 4rem;
-}
-
-.hero-content {
-  flex: 1 1 300px;
-  max-width: 600px;
-}
-
-.hero-subtitle {
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--gold);
-  margin-bottom: 0.5rem;
-  font-size: 1.25rem;  
-  font-weight: 600;      
-}
-
-.hero-title {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.hero-text {
-  font-size: 1.1rem;
   margin-bottom: 1.5rem;
+  border-radius: 6px;
+  background-color: rgba(229, 62, 62, 0.1); /* Fond rouge très léger */
+  color: #c53030; /* Texte rouge foncé */
+  border: 1px solid rgba(229, 62, 62, 0.2);
 }
 
+/* --- AMÉLIORATIONS POUR LA SECTION HERO --- */
+
+/* Ajoute une ombre subtile au texte pour un meilleur contraste */
+.hero-content .hero-subtitle,
+.hero-content .hero-title,
+.hero-content .hero-text {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Rend le titre principal encore plus impactant */
+.hero-content .hero-title {
+    font-weight: 800; /* Police un peu plus grasse */
+}
+
+/* Améliore le bouton pour qu'il attire plus l'oeil */
 .btn-hero {
-  display: inline-block;
-  background-color: var(--gold);
-  color: var(--navy);
-  padding: 0.8rem 1.5rem;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: opacity 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25); /* Ombre plus prononcée */
 }
 
-.btn-hero:hover {
-  opacity: 0.8;
-}
 
-.hero-image {
-  flex: 1 1 300px;
-  text-align: center;
-}
-
-.hero-image img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-/* ---------------------------------------------
-   SECTION CAPTEUR SON
-   --------------------------------------------- */
-.sensor-section {
-  padding: 3rem 2rem;
+/* Style du header quand la page a été scrollée */
+.site-header.scrolled {
   background-color: #fff;
-  text-align: center;
-}
-
-.sensor-section h2 {
-  font-size: 2rem;
-  color: var(--navy);
-  margin-bottom: 2rem;
-}
-
-.sensor-card {
-  display: inline-block;
-  background: var(--light-gray);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  max-width: 400px;
-  width: 100%;
-}
-
-.sensor-label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--text-dark);
-}
-
-.decibel-value {
-  font-size: 3rem;
-  color: var(--red);
-  margin-bottom: 1.5rem;
-}
-
-.sensor-chart {
-  border-top: 1px solid #ddd;
-  padding-top: 1.5rem;
-}
-
-.sensor-placeholder {
-  color: #666;
-  font-style: italic;
+  border-bottom-color: var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

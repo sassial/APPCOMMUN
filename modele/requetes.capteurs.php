@@ -1,24 +1,44 @@
 <?php
-// ON RETIRE L'INCLUDE D'ICI. CE FICHIER NE CONTIENT QUE LA FONCTION.
 
-/**
- * Récupère la dernière mesure de son enregistrée depuis la table `Capteur Son`.
- * @param PDO $bdd_commune L'objet de connexion à la BDD commune
- * @return array|null Les données de la mesure ou null si aucune
- */
-function recupererDerniereMesure(PDO $bdd_commune): ?array {
+function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
+    $colonneValeur = 'valeur';
+    $colonneTemps = 'temps';
 
-    // On utilise les noms de colonnes exacts : `valeur` et `temps`
-    $query = 'SELECT `valeur` AS valeur_db, `temps` AS horodatage FROM `Capteur Son` ORDER BY `temps` DESC LIMIT 1';
-
-    try {
-        $statement = $bdd_commune->query($query);
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-
-        return $result ?: null;
-
-    } catch (PDOException $e) {
-        die("Erreur SQL : " . $e->getMessage());
+    // On adapte les noms de colonnes en fonction de la table
+    if ($nomTable === 'CapteurLumiere') {
+        $colonneValeur = 'valeur_luminosite';
+        $colonneTemps = 'date_mesure';
+    } 
+    // On ajoute une condition pour le futur capteur de gaz
+    else if ($nomTable === 'CapteurGaz') { 
+        // Hypothèses pour le futur nom des colonnes, à adapter si besoin
+        $colonneValeur = 'valeur_ppm'; 
+        $colonneTemps = 'temps';
     }
+
+    $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
+    $query = "SELECT `$colonneValeur` AS valeur, `$colonneTemps` AS temps 
+              FROM $nomTableSecurise 
+              ORDER BY `$colonneTemps` DESC 
+              LIMIT 50";
+    
+    try {
+        $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return ['latest' => null, 'min' => null, 'max' => null, 'average' => null, 'history' => []];
+    }
+
+    if (empty($historique)) {
+        return ['latest' => null, 'min' => null, 'max' => null, 'average' => null, 'history' => []];
+    }
+
+    $valeurs = array_column($historique, 'valeur');
+
+    return [
+        'latest'  => $historique[0],
+        'min'     => round(min($valeurs), 1),
+        'max'     => round(max($valeurs), 1),
+        'average' => round(array_sum($valeurs) / count($valeurs), 1),
+        'history' => array_reverse($historique)
+    ];
 }
-?>

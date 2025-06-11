@@ -1,34 +1,39 @@
 <?php
 
-// 1. On inclut la connexion à la BDD commune. La variable $bdd_commune est maintenant disponible.
+// 1. On inclut la connexion à la BDD commune.
 include_once('./modele/connexion_commune.php'); 
 
-// 2. On inclut le fichier avec les fonctions de requêtes. PHP connaît maintenant recupererDerniereMesure().
+// 2. On inclut le fichier avec les fonctions de requêtes.
 include_once('./modele/requetes.capteurs.php');
 
-// si la fonction n'est pas définie, on choisit d'afficher l'accueil
-if (!isset($_GET['fonction']) || empty($_GET['fonction'])) {
-    $function = "gestion";
-} else {
-    $function = $_GET['fonction'];
-}
+// On détermine la fonction à appeler, par défaut 'affichage'.
+$function = $_GET['fonction'] ?? 'affichage';
 
+// On utilise un switch pour gérer les différentes fonctions
 switch ($function) {
     
     case 'gestion':
         $vue = "gestion";
         break;
     
-    case 'affichage':
-        // 3. On appelle la fonction. Cela fonctionne car elle a été chargée à l'étape 2.
-        //    La variable $bdd_commune a été chargée à l'étape 1.
-        $derniereMesure = recupererDerniereMesure($bdd_commune);
+  
+   case 'affichage':
+        // On récupère les données pour chaque capteur
+        $donneesSon = recupererDonneesCapteur($bdd_commune, 'Capteur Son');
+        $donneesLumiere = recupererDonneesCapteur($bdd_commune, 'CapteurLumiere');
+        $donneesProximite = recupererDonneesCapteur($bdd_commune, 'CapteurProximite');
+        // ON AJOUTE L'APPEL POUR LE CAPTEUR DE GAZ
+        $donneesGaz = recupererDonneesCapteur($bdd_commune, 'CapteurGaz'); 
 
         $vue = "affichage";
         break;
+
         
     default:
+        // Si la fonction demandée n'existe pas, on affiche une erreur 404.
         $vue = "erreur404";
+        break;
 }
 
+// On inclut la vue correspondante.
 include ('vues/' . $vue . '.php');
