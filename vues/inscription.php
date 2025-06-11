@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Inscription – Gusteau’s</title>
   <!-- Lien vers le CSS commun -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/APPCOMMUN/vues/style.css">
 </head>
 <body>
 
@@ -40,11 +40,7 @@
         <button type="submit" class="btn-submit">S’inscrire</button>
       </form>
       <p class="login-link">
-<<<<<<< HEAD
-        Vous avez déjà un compte ? <a href="connexion.php">Connectez-vous</a>
-=======
         Vous avez déjà un compte ? <a href="index.php?cible=utilisateurs&fonction=login">Connectez-vous</a>
->>>>>>> c31e38e3cfc098eb8ebbbbc0d2b288f9a2f36ef1
       </p>
     </section>
   </main>
