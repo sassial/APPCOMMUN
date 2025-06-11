@@ -296,3 +296,42 @@ body {
   color: #666;
   font-style: italic;
 }
+
+
+/* ---------------------------------------------
+   Graphique barres statique
+   --------------------------------------------- */
+.sensor-chart {
+  margin-top: 1.5rem;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 150px;
+  padding: 0 1rem;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.bar-item {
+  flex: 1;
+  background-color: var(--red);
+  height: var(--height);
+  border-radius: 4px 4px 0 0;
+  transition: opacity 0.2s ease;
+}
+
+.bar-item:hover {
+  opacity: 0.8;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}

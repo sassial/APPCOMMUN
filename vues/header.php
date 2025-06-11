@@ -1,6 +1,6 @@
 <header class="site-header">
   <div class="header-container">
-    <a href="index.php" class="logo-link">
+    <a href="index.php?cible=utilisateurs&fonction=accueil" class="logo-link">
       <img src="/APPCOMMUN/logo.jpg" alt="Logo Gusteau’s" class="logo"/>
     </a>
     <nav class="main-nav">
