@@ -10,15 +10,16 @@ $table = "utilisateurs";
  * @param string $nom
  * @return array
  */
-function rechercheParNom(PDO $bdd, string $nom): array {
-    
-    $statement = $bdd->prepare('SELECT * FROM  utilisateurs WHERE nom = :nom');
-    $statement->bindParam(":nom", $nom);
+function rechercheParEmail(PDO $bdd, string $email): ?array {
+    $statement = $bdd->prepare('SELECT * FROM utilisateurs WHERE email = :email');
+    $statement->bindParam(":email", $email, PDO::PARAM_STR);
     $statement->execute();
-    
-    return $statement->fetchAll();
-    
+
+    $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+    return $result ?: null;
 }
+
 
 /**
  * Récupère tous les enregistrements de la table utilisateurs

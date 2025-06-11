@@ -18,8 +18,29 @@ switch ($function) {
         break;
     
     case 'login':
-        //affichage de l'inscription
         $vue = "login";
+
+        // Traitement du formulaire de connexion
+        if (isset($_POST['email'], $_POST['password'])) {
+            $email = nettoyerDonnees($_POST['email']);
+            $password = nettoyerDonnees($_POST['password']);
+
+            // Recherche de l'utilisateur dans la BDD
+            $utilisateur = rechercheParEmail($bdd, $email);
+
+            if ($utilisateur && password_verify($password, $utilisateur['password'])) {
+                $_SESSION['utilisateur'] = [
+                    'id' => $utilisateur['id'],
+                    'prenom' => $utilisateur['prenom'],
+                    'nom' => $utilisateur['nom'],
+                    'email' => $utilisateur['email']
+                ];
+                $alerte = "Connexion réussie. Bienvenue " . $utilisateur['prenom'] . " !";
+                $vue = "accueil"; // Redirection vers accueil
+            } else {
+                $alerte = "Adresse e-mail ou mot de passe incorrect.";
+            }
+        }
         break;
 
     case 'inscription':
