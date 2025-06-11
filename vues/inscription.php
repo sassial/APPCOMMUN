@@ -17,26 +17,32 @@
     <section class="signup-card">
       <h1>Créer votre compte</h1>
       <form action="../controleurs/utilisateurs.php?action=register" method="post" class="signup-form">
+
         <div class="form-group">
-          <label for="fullname">Nom complet</label>
-          <input type="text" id="fullname" name="fullname" required>
+          <label for="nom">Nom</label>
+          <input type="text" id="nom" name="nom" required>
         </div>
+
+        <div class="form-group">
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" name="prenom" required>
+        </div>
+
         <div class="form-group">
           <label for="email">Adresse e-mail</label>
           <input type="email" id="email" name="email" required>
         </div>
-        <div class="form-group">
-          <label for="phone">Téléphone</label>
-          <input type="tel" id="phone" name="phone">
-        </div>
+
         <div class="form-group">
           <label for="password">Mot de passe</label>
           <input type="password" id="password" name="password" required>
         </div>
+
         <div class="form-group">
           <label for="confirm_password">Confirmer le mot de passe</label>
           <input type="password" id="confirm_password" name="confirm_password" required>
         </div>
+
         <button type="submit" class="btn-submit">S’inscrire</button>
       </form>
       <p class="login-link">
