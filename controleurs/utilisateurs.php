@@ -5,7 +5,7 @@ include('./modele/requetes.utilisateurs.php');
 
 // si la fonction n'est pas définie, on choisit d'afficher l'accueil
 if (!isset($_GET['fonction']) || empty($_GET['fonction'])) {
-    $function = "inscription";
+    $function = "login";
 } else {
     $function = $_GET['fonction'];
 }
@@ -15,6 +15,11 @@ switch ($function) {
     case 'accueil':
         //affichage de l'accueil
         $vue = "accueil";
+        break;
+    
+    case 'login':
+        //affichage de l'inscription
+        $vue = "login";
         break;
 
     case 'inscription':

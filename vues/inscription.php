@@ -38,7 +38,7 @@
         <button type="submit" class="btn-submit">S’inscrire</button>
       </form>
       <p class="login-link">
-        Vous avez déjà un compte ? <a href="/connexion">Connectez-vous</a>
+        Vous avez déjà un compte ? <a href="index.php?cible=utilisateurs&fonction=login">Connectez-vous</a>
       </p>
     </section>
   </main>

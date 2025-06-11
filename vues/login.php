@@ -1,15 +1,14 @@
-<!-- htdocs/gusteaus/login.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Connexion – Gusteau’s</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="/APPCOMMUN/vues/style.css"/>
 </head>
 <body>
   <header class="site-header">
-    <img src="../logo.jpg" alt="Logo Gusteau’s" class="logo"/>
+    <img src="/APPCOMMUN/logo.jpg" alt="Logo Gusteau’s" class="logo"/>
   </header>
 
   <main class="container">
@@ -27,7 +26,7 @@
         <button type="submit" class="btn-submit">Connexion</button>
       </form>
       <p class="login-link">
-        Pas encore de compte ? <a href="index.html">Inscrivez-vous</a>
+        Pas encore de compte ? <a href="index.php?cible=utilisateurs&fonction=inscription">Inscrivez-vous</a>
       </p>
     </section>
   </main>
