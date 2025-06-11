@@ -24,19 +24,76 @@ body {
   line-height: 1.6;
 }
 
-/* En-tête */
+/* ---------------------------------------------
+   HEADER : logo et menu
+   --------------------------------------------- */
+
 .site-header {
   background-color: var(--navy);
-  padding: 1rem;
-  text-align: center;
+  padding: 0.25rem 0;      /* header plus fin, plus de padding latéral ici */
+}
+
+.header-container {
+  /* on occupe toute la largeur + padding interne */
+  width: 100%;
+  max-width: none;
+  padding: 0 2rem;       
+  margin: 0;             
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .logo {
-  max-width: 200px;
-  height: auto;
+  max-height: 80px;       /* plus gros logo */
+  width: auto;
+  margin-top: 8px;
 }
 
-/* Conteneur principal */
+/* nav identique à avant… */
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.main-nav a:hover,
+.main-nav a:focus {
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* menu responsive inchangé… */
+@media (max-width: 600px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .main-nav ul {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .main-nav a {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+}
+
+
+/* ---------------------------------------------
+   CONTENEUR PRINCIPAL (centrage des pages de forms)
+   --------------------------------------------- */
 .container {
   display: flex;
   justify-content: center;
@@ -45,7 +102,9 @@ body {
   padding: 2rem;
 }
 
-/* Carte d’inscription/connexion */
+/* ---------------------------------------------
+   SIGNUP/CLOGIN CARD
+   --------------------------------------------- */
 .signup-card {
   background: #fff;
   border-radius: 8px;
@@ -61,7 +120,6 @@ body {
   color: var(--navy);
 }
 
-/* Formulaire */
 .signup-form .form-group {
   text-align: left;
   margin-bottom: 1rem;
@@ -87,7 +145,6 @@ body {
   box-shadow: 0 0 0 2px rgba(193,39,45,0.2);
 }
 
-/* Bouton */
 .btn-submit {
   width: 100%;
   padding: 0.8rem;
@@ -105,7 +162,6 @@ body {
   background-color: var(--red-dark);
 }
 
-/* Lien vers l’autre page */
 .login-link {
   margin-top: 1rem;
   font-size: 0.9rem;
@@ -121,11 +177,120 @@ body {
   text-decoration: underline;
 }
 
-/* Pied de page */
+/* ---------------------------------------------
+   FOOTER
+   --------------------------------------------- */
 .site-footer {
   background-color: var(--navy);
   color: #fff;
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;
+}
+
+/* ---------------------------------------------
+   HERO SECTION
+   --------------------------------------------- */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: var(--navy);
+  color: white;
+  padding: 2rem 2rem 4rem;
+}
+
+.hero-content {
+  flex: 1 1 300px;
+  max-width: 600px;
+}
+
+.hero-subtitle {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.hero-title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero-text {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-hero {
+  display: inline-block;
+  background-color: var(--gold);
+  color: var(--navy);
+  padding: 0.8rem 1.5rem;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: opacity 0.3s ease;
+}
+
+.btn-hero:hover {
+  opacity: 0.8;
+}
+
+.hero-image {
+  flex: 1 1 300px;
+  text-align: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* ---------------------------------------------
+   SECTION CAPTEUR SON
+   --------------------------------------------- */
+.sensor-section {
+  padding: 3rem 2rem;
+  background-color: #fff;
+  text-align: center;
+}
+
+.sensor-section h2 {
+  font-size: 2rem;
+  color: var(--navy);
+  margin-bottom: 2rem;
+}
+
+.sensor-card {
+  display: inline-block;
+  background: var(--light-gray);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.sensor-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+.decibel-value {
+  font-size: 3rem;
+  color: var(--red);
+  margin-bottom: 1.5rem;
+}
+
+.sensor-chart {
+  border-top: 1px solid #ddd;
+  padding-top: 1.5rem;
+}
+
+.sensor-placeholder {
+  color: #666;
+  font-style: italic;
 }
