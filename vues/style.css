@@ -210,6 +210,8 @@ body {
   letter-spacing: 0.2em;
   color: var(--gold);
   margin-bottom: 0.5rem;
+  font-size: 1.25rem;  
+  font-weight: 600;      
 }
 
 .hero-title {
