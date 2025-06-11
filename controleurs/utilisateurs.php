@@ -1,6 +1,6 @@
 <?php
 
-// on inclut le fichier modèle contenant les appels à la BDD
+// on inclut le fichier modèle contenant les appels à la BDD LOCALE
 include('./modele/requetes.utilisateurs.php');
 
 // si la fonction n'est pas définie, on choisit d'afficher l'accueil
@@ -12,10 +12,21 @@ if (!isset($_GET['fonction']) || empty($_GET['fonction'])) {
 
 switch ($function) {
     
-    case 'accueil':
-        //affichage de l'accueil
+        case 'accueil':
+        // ================================================================
+        //      NOUVELLE LOGIQUE POUR LA PAGE D'ACCUEIL
+        // ================================================================
+        // 1. Inclure la connexion et les requêtes pour la BDD COMMUNE
+        include_once('./modele/connexion_commune.php');
+        include_once('./modele/requetes.capteurs.php');
+
+        // 2. Récupérer les données pour le dashboard personnel
+        $donneesSonDetaillees = recupererDonneesDetaillees($bdd_commune, 'Capteur Son');
+        
+        // 3. Définir la vue à afficher
         $vue = "accueil";
         break;
+
     
     case 'login':
         $vue = "login";

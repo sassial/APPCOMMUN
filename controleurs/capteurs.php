@@ -1,10 +1,13 @@
 <?php
 
-// 1. On inclut la connexion à la BDD commune.
-include_once('./modele/connexion_commune.php'); 
+// ===================================================================
+//              CORRECTION AVEC CHEMINS ABSOLUS ROBUSTES
+// ===================================================================
 
-// 2. On inclut le fichier avec les fonctions de requêtes.
-include_once('./modele/requetes.capteurs.php');
+// On inclut les fichiers en partant du dossier de ce fichier (__DIR__)
+// C'est la méthode la plus fiable.
+include_once(__DIR__ . '/../modele/connexion_commune.php'); 
+include_once(__DIR__ . '/../modele/requetes.capteurs.php');
 
 // On détermine la fonction à appeler, par défaut 'affichage'.
 $function = $_GET['fonction'] ?? 'affichage';
@@ -16,18 +19,16 @@ switch ($function) {
         $vue = "gestion";
         break;
     
-  
-   case 'affichage':
-        // On récupère les données pour chaque capteur
+    case 'affichage':
+        // L'appel à la fonction est maintenant valide car le fichier a été inclus correctement
         $donneesSon = recupererDonneesCapteur($bdd_commune, 'Capteur Son');
         $donneesLumiere = recupererDonneesCapteur($bdd_commune, 'CapteurLumiere');
         $donneesProximite = recupererDonneesCapteur($bdd_commune, 'CapteurProximite');
-        // ON AJOUTE L'APPEL POUR LE CAPTEUR DE GAZ
         $donneesGaz = recupererDonneesCapteur($bdd_commune, 'CapteurGaz'); 
 
+        // On définit la vue à charger
         $vue = "affichage";
         break;
-
         
     default:
         // Si la fonction demandée n'existe pas, on affiche une erreur 404.
@@ -36,4 +37,4 @@ switch ($function) {
 }
 
 // On inclut la vue correspondante.
-include ('vues/' . $vue . '.php');
+include(__DIR__ . '/../vues/' . $vue . '.php');
