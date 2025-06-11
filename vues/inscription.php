@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inscription – Restaurant Gusteau’s</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="/APPCOMMUN/vues/style.css"/>
 </head>
 <body>
   <header class="site-header">
-    <img src="../logo.jpg" alt="Logo Gusteau’s" class="logo"/>
+    <img src="/APPCOMMUN/logo.jpg" alt="Logo Gusteau’s" class="logo"/>
   </header>
 
   <main class="container">
