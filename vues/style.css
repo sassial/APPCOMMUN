@@ -1,0 +1,130 @@
+/* styles.css */
+
+/* Variables de couleur */
+:root {
+  --red: #C1272D;
+  --gold: #F0C75E;
+  --navy: #1B365D;
+  --light-gray: #F7F7F7;
+  --text-dark: #333;
+}
+
+/* Reset basique */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-gray);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* En-tête */
+.site-header {
+  background-color: var(--navy);
+  padding: 1rem;
+  text-align: center;
+}
+
+.logo {
+  max-width: 200px;
+  height: auto;
+}
+
+/* Conteneur principal */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+  padding: 2rem;
+}
+
+/* Carte d’inscription */
+.signup-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.signup-card h1 {
+  margin-bottom: 1.5rem;
+  color: var(--navy);
+}
+
+/* Formulaire */
+.signup-form .form-group {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.signup-form label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.signup-form input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.signup-form input:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px rgba(193,39,45,0.2);
+}
+
+/* Bouton */
+.btn-submit {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  background-color: var(--red);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-submit:hover {
+  background-color: darken(var(--red), 10%);
+}
+
+/* Lien connexion */
+.login-link {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.login-link a {
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Pied de page */
+.site-footer {
+  background-color: var(--navy);
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
