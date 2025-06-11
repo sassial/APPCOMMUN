@@ -4,4 +4,4 @@
 */
 ?>
 
-<p>Page d'Accueil</p>
+<p>Page d'accueil</p>
