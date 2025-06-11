@@ -29,10 +29,10 @@ switch ($function) {
         // Cette partie du code est appelée si le formulaire a été posté
         if (isset($_POST['prenom'], $_POST['nom'], $_POST['password'], $_POST['email'])) {
             $values = [
-                'prenom' => $_POST['prenom'],
-                'nom' => $_POST['nom'],
-                'email' => $_POST['email'],
-                'password' => crypterMdp($_POST['password'])
+                'prenom'   => nettoyerDonnees($_POST['prenom']),
+                'nom'      => nettoyerDonnees($_POST['nom']),
+                'email'    => nettoyerDonnees($_POST['email']),
+                'password' => nettoyerDonnees(crypterMdp($_POST['password']))
             ];
 
             // Appel à la BDD à travers une fonction du modèle.
