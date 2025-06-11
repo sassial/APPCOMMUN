@@ -3,9 +3,6 @@
 //on définit le nom de la table
 $table = "utilisateurs";
 
-// requêtes spécifiques à la table des capteurs
-
-
 /**
  * Recherche un utilisateur en fonction du nom passé en paramètre
  * @param PDO $bdd
@@ -38,10 +35,11 @@ function recupereTousUtilisateurs(PDO $bdd): array {
  */
 function ajouteUtilisateur(PDO $bdd, array $utilisateur) {
     
-    $query = ' INSERT INTO utilisateurs (nom, mot_de_passe) VALUES (:nom, :mot_de_passe)';
+    $query = ' INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (:nom, :email, :mot_de_passe)';
     $donnees = $bdd->prepare($query);
     $donnees->bindParam(":nom", $utilisateur['nom'], PDO::PARAM_STR);
-    $donnees->bindParam(":mot_de_passe", $utilisateur['mot_de_passe']);
+    $donnees->bindParam(":email", $utilisateur['email'], PDO::PARAM_STR);
+    $donnees->bindParam(":mot_de_passe", $utilisateur['mot_de_passe'], PDO::PARAM_STR);
     return $donnees->execute();
     
 }
