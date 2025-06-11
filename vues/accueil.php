@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Accueil – Gusteau’s</title>
-  <link rel="stylesheet" href="/APPCOMMUN/vues/style.css">
+  <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
 </head>
 <body>
 
@@ -24,7 +24,7 @@
     </div>
     <div class="hero-image">
       <!-- remplacez par une belle photo d’ambiance -->
-      <img src="/APPCOMMUN/photo.jpg" alt="Gusteau’s">
+      <img src="<?= BASE_PATH ?>/photo.jpg" alt="Gusteau’s">
     </div>
   </section>
 

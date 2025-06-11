@@ -1,7 +1,10 @@
 <?php
 
-// on inclut le fichier modèle contenant les appels à la BDD
-include('./modele/requetes.capteurs.php');
+// 1. On inclut la connexion à la BDD commune. La variable $bdd_commune est maintenant disponible.
+include_once('./modele/connexion_commune.php'); 
+
+// 2. On inclut le fichier avec les fonctions de requêtes. PHP connaît maintenant recupererDerniereMesure().
+include_once('./modele/requetes.capteurs.php');
 
 // si la fonction n'est pas définie, on choisit d'afficher l'accueil
 if (!isset($_GET['fonction']) || empty($_GET['fonction'])) {
@@ -13,17 +16,18 @@ if (!isset($_GET['fonction']) || empty($_GET['fonction'])) {
 switch ($function) {
     
     case 'gestion':
-        //affichage de l'accueil
         $vue = "gestion";
         break;
     
     case 'affichage':
-        //affichage de l'inscription
+        // 3. On appelle la fonction. Cela fonctionne car elle a été chargée à l'étape 2.
+        //    La variable $bdd_commune a été chargée à l'étape 1.
+        $derniereMesure = recupererDerniereMesure($bdd_commune);
+
         $vue = "affichage";
         break;
         
     default:
-        // si aucune fonction ne correspond au paramètre function passé en GET
         $vue = "erreur404";
 }
 

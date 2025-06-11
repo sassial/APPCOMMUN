@@ -1,7 +1,21 @@
 <?php
+
+
+// index.php
+
+// Define the base path for your application
+define('BASE_PATH', '/APPDEUX/APPCOMMUN');
+
 ini_set('display_errors', 1);
 
-include("controleurs/fonctions.php");
+
+// ... rest of the file
+
+ini_set('display_errors', 1);
+
+
+// TO THIS:
+include_once("controleurs/fonctions.php");
 include("vues/fonctions.php");
 
 // On identifie le contrôleur à appeler dont le nom est contenu dans cible passé en GET
