@@ -133,3 +133,21 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         'history'   => array_reverse($data24h)
     ];
 }
+// À la fin de modele/requetes.capteurs.php
+// ...
+function recupererTemperatureExterne(string $ville = 'Paris'): ?float {
+    $lat = 48.85;
+    $lon = 2.35;
+    
+    // CORRECTION ICI : Remplacer `¤t_weather` par `¤t_weather`
+    $url = "https://api.open-meteo.com/v1/forecast?latitude={$lat}&longitude={$lon}¤t_weather=true";
+    
+    $json_data = @file_get_contents($url);
+    if ($json_data === false) {
+        return null;
+    }
+    
+    $weather_data = json_decode($json_data, true);
+    
+    return $weather_data['current_weather']['temperature'] ?? null;
+}

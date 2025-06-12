@@ -6,13 +6,24 @@
     <nav class="main-nav">
       <ul>
         <?php if (isset($_SESSION['utilisateur'])): ?>
-            <!-- Menu pour utilisateur CONNECTÉ -->
+            <!-- =============================== -->
+            <!--   MENU POUR UTILISATEUR CONNECTÉ -->
+            <!-- =============================== -->
             <li><a href="#">Bienvenue, <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?></a></li>
             <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=accueil#capteur">Capteur son</a></li>
             <li><a href="<?= BASE_PATH ?>/index.php?cible=capteurs&fonction=affichage">Autres capteurs</a></li>
+            
+            <?php // On affiche le lien "Gestion" SEULEMENT si l'utilisateur est un admin
+            if (isset($_SESSION['utilisateur']['role']) && $_SESSION['utilisateur']['role'] === 'admin'): ?>
+                <li><a href="<?= BASE_PATH ?>/index.php?cible=capteurs&fonction=gestion">Gestion</a></li>
+            <?php endif; ?>
+
             <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=logout">Déconnexion</a></li>
+
         <?php else: ?>
-            <!-- Menu pour VISITEUR -->
+            <!-- =============================== -->
+            <!--      MENU POUR VISITEUR NON CONNECTÉ     -->
+            <!-- =============================== -->
             <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=login">Connexion</a></li>
             <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=inscription">Inscription</a></li>
         <?php endif; ?>

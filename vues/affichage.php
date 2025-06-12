@@ -1,158 +1,149 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Tableau de Bord – Gusteau’s</title>
-  <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Tableau de Bord – Gusteau’s</title>
+    <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body>
 
-  <?php include __DIR__ . '/header.php'; ?>
+    <?php include __DIR__ . '/header.php'; ?>
 
-  <main class="dashboard-container">
-    <h1>Tableau de Bord des Capteurs</h1>
-    <div class="dashboard-grid">
+    <main class="dashboard-container">
+        <h1>Tableau de Bord des Capteurs</h1>
+        <div class="dashboard-grid">
 
-      <!-- Carte 1 : Capteur Température & Humidité -->
-      <div class="dashboard-card">
-        <div class="card-header"><span class="card-icon">🌡️</span><h2 class="card-title">Température & Humidité</h2></div>
-        <div class="card-content">
-          <div class="card-stats">
-            <div class="stat-item"><p class="stat-value"><span id="val-temp-actuelle"><?= $donneesTempHum['latest']['temperature'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Actuelle</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-hum-actuelle"><?= $donneesTempHum['latest']['humidite'] ?? '--' ?></span><span class="unit">%</span></p><p class="stat-label">Humidité</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-temp-max"><?= $donneesTempHum['max_temp'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Max</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-temp-min"><?= $donneesTempHum['min_temp'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Min</p></div>
-          </div>
-          <div class="card-chart-container"><canvas id="chartTempHum"></canvas></div>
+            <!-- Carte Météo Externe (Fonctionnalité Bonus) -->
+            <div class="dashboard-card">
+                <div class="card-header"><span class="card-icon">🌍</span><h2 class="card-title">Météo Externe (Paris)</h2></div>
+                <div class="card-content-simple">
+                    <p class="big-value"><?= isset($temperatureExterne) ? number_format($temperatureExterne, 1) : 'N/A' ?> °C</p>
+                    <p class="stat-label">Température actuelle</p>
+                </div>
+            </div>
+            
+            <!-- Boucle dynamique pour générer les cartes des dispositifs -->
+            <?php foreach ($dispositifs as $dispositif): ?>
+                <?php if ($dispositif['type'] === 'capteur'): 
+                    $data = $donnees_capteurs[$dispositif['id']] ?? null;
+                ?>
+                    <!-- CARTE TYPE CAPTEUR -->
+                    <div class="dashboard-card">
+                        <div class="card-header"><span class="card-icon">#</span><h2 class="card-title"><?= htmlspecialchars($dispositif['nom']) ?></h2></div>
+                        <div class="card-content">
+                            <div class="card-stats">
+                                <?php if ($dispositif['nom_table_bdd'] === 'CapteurTempHum'): ?>
+                                    <div class="stat-item"><p class="stat-value"><span id="val-<?= $dispositif['id'] ?>-temp"><?= $data['latest']['temperature'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Actuelle</p></div>
+                                    <div class="stat-item"><p class="stat-value"><span id="val-<?= $dispositif['id'] ?>-hum"><?= $data['latest']['humidite'] ?? '--' ?></span><span class="unit">%</span></p><p class="stat-label">Humidité</p></div>
+                                    <div class="stat-item"><p class="stat-value"><span id="val-<?= $dispositif['id'] ?>-max"><?= $data['max_temp'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Max</p></div>
+                                    <div class="stat-item"><p class="stat-value"><span id="val-<?= $dispositif['id'] ?>-min"><?= $data['min_temp'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Min</p></div>
+                                <?php else: ?>
+                                    <div class="stat-item"><p class="stat-value"><span id="val-<?= $dispositif['id'] ?>-actuel"><?= $data['latest']['valeur'] ?? '--' ?></span><span class="unit"><?= htmlspecialchars($dispositif['unite']) ?></span></p><p class="stat-label">Actuel</p></div>
+                                    <div class="stat-item"><p class="stat-value"><span id="val-<?= $dispositif['id'] ?>-max"><?= $data['max'] ?? '--' ?></span></p><p class="stat-label">Max</p></div>
+                                    <div class="stat-item"><p class="stat-value"><span id="val-<?= $dispositif['id'] ?>-min"><?= $data['min'] ?? '--' ?></span></p><p class="stat-label">Min</p></div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-chart-container"><canvas id="chart-<?= $dispositif['id'] ?>"></canvas></div>
+                        </div>
+                    </div>
+                <?php elseif ($dispositif['type'] === 'actionneur'): 
+                    $etat_actuel = $etats_actionneurs[$dispositif['id']] ?? 0;
+                ?>
+                    <!-- CARTE TYPE ACTIONNEUR -->
+                    <div class="dashboard-card">
+                        <div class="card-header"><span class="card-icon">⚡</span><h2 class="card-title"><?= htmlspecialchars($dispositif['nom']) ?></h2></div>
+                        <div class="card-content-simple">
+                            <label class="switch">
+                                <input type="checkbox" class="actionneur-checkbox" data-id="<?= $dispositif['id'] ?>" <?= $etat_actuel ? 'checked' : '' ?>>
+                                <span class="slider"></span>
+                            </label>
+                            <p class="stat-label" id="etat-label-<?= $dispositif['id'] ?>"><?= $etat_actuel ? 'ALLUMÉ' : 'ÉTEINT' ?></p>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
         </div>
-      </div>
+    </main>
 
-      <!-- Carte 2 : Capteur Lumière -->
-      <div class="dashboard-card">
-        <div class="card-header"><span class="card-icon">💡</span><h2 class="card-title">Capteur Lumière</h2></div>
-        <div class="card-content">
-          <div class="card-stats">
-            <div class="stat-item"><p class="stat-value"><span id="val-lum-actuelle"><?= $donneesLumiere['latest']['valeur'] ?? '--' ?></span><span class="unit">lux</span></p><p class="stat-label">Actuel</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-lum-max"><?= $donneesLumiere['max'] ?? '--' ?></span></p><p class="stat-label">Max</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-lum-min"><?= $donneesLumiere['min'] ?? '--' ?></span></p><p class="stat-label">Min</p></div>
-          </div>
-          <div class="card-chart-container"><canvas id="chartLumiere"></canvas></div>
-        </div>
-      </div>
+    <?php include __DIR__ . '/footer.php'; ?>
 
-      <!-- Carte 3 : Capteur Proximité -->
-      <div class="dashboard-card">
-        <div class="card-header"><span class="card-icon">📏</span><h2 class="card-title">Capteur Proximité</h2></div>
-        <div class="card-content">
-          <div class="card-stats">
-            <div class="stat-item"><p class="stat-value"><span id="val-prox-actuelle"><?= $donneesProximite['latest']['valeur'] ?? '--' ?></span><span class="unit">cm</span></p><p class="stat-label">Actuel</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-prox-min"><?= $donneesProximite['min'] ?? '--' ?></span></p><p class="stat-label">Min</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-prox-moyenne"><?= $donneesProximite['average'] ?? '--' ?></span></p><p class="stat-label">Moyenne</p></div>
-          </div>
-          <div class="card-chart-container"><canvas id="chartProximite"></canvas></div>
-        </div>
-      </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rootStyles = getComputedStyle(document.documentElement);
+            const colors = {
+                red: rootStyles.getPropertyValue('--red').trim(),
+                gold: rootStyles.getPropertyValue('--gold').trim(),
+                navy: rootStyles.getPropertyValue('--navy').trim(),
+                teal: rootStyles.getPropertyValue('--teal').trim()
+            };
 
-      <!-- Carte 4 : Capteur de Gaz -->
-      <div class="dashboard-card">
-        <div class="card-header"><span class="card-icon">💨</span><h2 class="card-title">Capteur de Gaz</h2></div>
-        <div class="card-content">
-          <div class="card-stats">
-            <div class="stat-item"><p class="stat-value"><span id="val-gaz-actuelle"><?= $donneesGaz['latest']['valeur'] ?? '--' ?></span><span class="unit">ppm</span></p><p class="stat-label">Actuel</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-gaz-max"><?= $donneesGaz['max'] ?? '--' ?></span></p><p class="stat-label">Max</p></div>
-            <div class="stat-item"><p class="stat-value"><span id="val-gaz-min"><?= $donneesGaz['min'] ?? '--' ?></span></p><p class="stat-label">Min</p></div>
-          </div>
-          <div class="card-chart-container"><canvas id="chartGaz"></canvas></div>
-        </div>
-      </div>
+            const charts = {};
 
-    </div>
-  </main>
+            // Initial chart creation
+            <?php foreach ($dispositifs as $dispositif): ?>
+                <?php if ($dispositif['type'] === 'capteur'): 
+                    $data = $donnees_capteurs[$dispositif['id']] ?? null;
+                    $dataKey = ($dispositif['nom_table_bdd'] === 'CapteurTempHum') ? 'temperature' : 'valeur';
+                ?>
+                    charts[<?= $dispositif['id'] ?>] = createChart(
+                        'chart-<?= $dispositif['id'] ?>',
+                        <?= json_encode($data['history'] ?? []) ?>,
+                        colors.navy, // You can make this dynamic later
+                        '<?= $dataKey ?>'
+                    );
+                <?php endif; ?>
+            <?php endforeach; ?>
+            
+            function createChart(canvasId, historyData, color, dataKey = 'valeur', tension = 0.3) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas || !historyData || historyData.length === 0) return null;
+                return new Chart(canvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: historyData.map(d => new Date(d.temps).toLocaleTimeString()),
+                        datasets: [{ data: historyData.map(d => d[dataKey]), borderColor: color, backgroundColor: color + '33', fill: true, pointRadius: 0, tension: tension }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+                });
+            }
+            
+            // --- GESTION DES ACTIONNEURS ---
+            document.querySelector('.dashboard-grid').addEventListener('change', function(e) {
+                if (e.target.matches('.actionneur-checkbox')) {
+                    const id = e.target.dataset.id;
+                    const etat = e.target.checked ? 1 : 0;
+                    const label = document.getElementById(`etat-label-${id}`);
+                    if (label) label.textContent = etat ? 'ALLUMÉ' : 'ÉTEINT';
 
-  <?php include __DIR__ . '/footer.php'; ?>
+                    const formData = new FormData();
+                    formData.append('id', id);
+                    formData.append('etat', etat);
 
-  <script>
-    const rootStyles = getComputedStyle(document.documentElement);
-    const redColor = rootStyles.getPropertyValue('--red').trim();
-    const goldColor = rootStyles.getPropertyValue('--gold').trim();
-    const navyColor = rootStyles.getPropertyValue('--navy').trim();
-    const tealColor = rootStyles.getPropertyValue('--teal').trim();
-
-    const charts = {};
-
-    function createChart(canvasId, historyData, color, dataKey = 'valeur', tension = 0.3) {
-      if (!document.getElementById(canvasId) || !historyData || historyData.length === 0) return null;
-      const ctx = document.getElementById(canvasId).getContext('2d');
-      return new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: historyData.map(d => new Date(d.temps).toLocaleTimeString()),
-          datasets: [{ data: historyData.map(d => d[dataKey]), borderColor: color, backgroundColor: color + '33', fill: true, pointRadius: 0, tension: tension }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
-      });
-    }
-
-    charts.tempHum = createChart('chartTempHum', <?= json_encode($donneesTempHum['history'] ?? []) ?>, redColor, 'temperature');
-    charts.lumiere = createChart('chartLumiere', <?= json_encode($donneesLumiere['history'] ?? []) ?>, goldColor);
-    charts.proximite = createChart('chartProximite', <?= json_encode($donneesProximite['history'] ?? []) ?>, navyColor);
-    charts.gaz = createChart('chartGaz', <?= json_encode($donneesGaz['history'] ?? []) ?>, tealColor);
-
-    function updateChart(chartInstance, historyData, dataKey = 'valeur') {
-        if (!chartInstance || !historyData || historyData.length === 0) return;
-        chartInstance.data.labels = historyData.map(d => new Date(d.temps).toLocaleTimeString());
-        chartInstance.data.datasets[0].data = historyData.map(d => d[dataKey]);
-        chartInstance.update('none'); // 'none' for no animation
-    }
-
-    function updateElement(id, value) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = value ?? '--';
-    }
-
-    function mettreAJourLesValeurs(donnees) {
-        if (donnees.tempHum) {
-            updateElement('val-temp-actuelle', donnees.tempHum.latest?.temperature);
-            updateElement('val-hum-actuelle', donnees.tempHum.latest?.humidite);
-            updateElement('val-temp-max', donnees.tempHum.max_temp);
-            updateElement('val-temp-min', donnees.tempHum.min_temp);
-            updateChart(charts.tempHum, donnees.tempHum.history, 'temperature');
-        }
-        if (donnees.lumiere) {
-            updateElement('val-lum-actuelle', donnees.lumiere.latest?.valeur);
-            updateElement('val-lum-max', donnees.lumiere.max);
-            updateElement('val-lum-min', donnees.lumiere.min);
-            updateChart(charts.lumiere, donnees.lumiere.history);
-        }
-        if (donnees.proximite) {
-            updateElement('val-prox-actuelle', donnees.proximite.latest?.valeur);
-            updateElement('val-prox-min', donnees.proximite.min);
-            updateElement('val-prox-moyenne', donnees.proximite.average);
-            updateChart(charts.proximite, donnees.proximite.history);
-        }
-        if (donnees.gaz) {
-            updateElement('val-gaz-actuelle', donnees.gaz.latest?.valeur);
-            updateElement('val-gaz-max', donnees.gaz.max);
-            updateElement('val-gaz-min', donnees.gaz.min);
-            updateChart(charts.gaz, donnees.gaz.history);
-        }
-    }
-
-    async function fetchDonneesLive() {
-        try {
-            const reponse = await fetch('<?= BASE_PATH ?>/api_get_latest.php');
-            if (!reponse.ok) throw new Error(`HTTP error! status: ${reponse.status}`);
-            const donnees = await reponse.json();
-            mettreAJourLesValeurs(donnees);
-        } catch (error) {
-            console.error('Erreur lors de la récupération des données live:', error);
-        }
-    }
-
-    setInterval(fetchDonneesLive, 5000); // Update every 5 seconds
-  </script>
+                    fetch('<?= BASE_PATH ?>/api_actionneur.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            console.error('Erreur lors du changement d\'état de l\'actionneur.');
+                            // Optional: revert the switch state on failure
+                            e.target.checked = !etat;
+                            if (label) label.textContent = !etat ? 'ALLUMÉ' : 'ÉTEINT';
+                        }
+                    })
+                    .catch(error => console.error('Fetch error:', error));
+                }
+            });
+            
+            // --- LIVE UPDATE (currently not implemented for dynamic cards, would need API update) ---
+            // The previous live update script would need to be adapted to this new dynamic structure.
+            // For now, the page is dynamic on load.
+        });
+    </script>
 </body>
 </html>

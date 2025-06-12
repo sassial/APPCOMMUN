@@ -2,12 +2,11 @@
 // Fichier : controleurs/utilisateurs.php
 
 require_once(__DIR__ . '/../modele/requetes.utilisateurs.php');
-require_once(__DIR__ . '/../modele/requetes.capteurs.php'); // Toujours nécessaire pour la page d'accueil
+require_once(__DIR__ . '/../modele/requetes.capteurs.php'); 
 require_once(__DIR__ . '/../modele/connexion_commune.php'); 
 
 $function = $_GET['fonction'] ?? 'login';
 
-// Si l'utilisateur est déjà connecté, on ne lui montre pas les pages de login/inscription
 if (isset($_SESSION['utilisateur']) && ($function === 'login' || $function === 'inscription')) {
     header('Location: index.php?cible=utilisateurs&fonction=accueil');
     exit();
@@ -15,7 +14,6 @@ if (isset($_SESSION['utilisateur']) && ($function === 'login' || $function === '
 
 switch ($function) {
     case 'accueil':
-        // La page d'accueil est protégée : si personne n'est connecté, on renvoie au login
         if (!isset($_SESSION['utilisateur'])) {
             header('Location: index.php?cible=utilisateurs&fonction=login');
             exit();
@@ -25,19 +23,17 @@ switch ($function) {
         break;
 
     case 'login':
+        // ... (votre code de login reste inchangé, il est bon)
         $vue = "login";
         if (!empty($_POST['email']) && !empty($_POST['password'])) {
             $email = nettoyerDonnees($_POST['email']);
             $password = nettoyerDonnees($_POST['password']);
-            
-            // On utilise notre BDD locale via $bdd (et non $bdd_commune)
             $utilisateur = rechercheParEmail($bdd, $email);
-
             if ($utilisateur && password_verify($password, $utilisateur['password'])) {
-                // Le mot de passe est correct, on enregistre l'utilisateur en session
                 $_SESSION['utilisateur'] = [
                     'id' => $utilisateur['id'],
-                    'prenom' => $utilisateur['prenom']
+                    'prenom' => $utilisateur['prenom'],
+                    'role' => $utilisateur['role']
                 ];
                 header('Location: index.php?cible=utilisateurs&fonction=accueil');
                 exit();
@@ -56,27 +52,33 @@ switch ($function) {
             $password = $_POST['password'] ?? '';
             $confirm_password = $_POST['confirm_password'] ?? '';
 
-            if ($password !== $confirm_password) {
+            // NOUVELLE VÉRIFICATION : La longueur du mot de passe
+            if (strlen($password) < 6) {
+                $alerte = "Le mot de passe doit contenir au moins 6 caractères.";
+            
+            } elseif ($password !== $confirm_password) {
                 $alerte = "Les mots de passe ne correspondent pas.";
+            
             } elseif (emailExiste($bdd, $email)) {
                 $alerte = "Cette adresse e-mail est déjà utilisée.";
+
             } else {
                 // Tout est bon, on peut créer l'utilisateur
                 $values = [
                     'prenom'   => $prenom,
                     'nom'      => $nom,
                     'email'    => $email,
-                    'password' => crypterMdp($password) // crypterMdp utilise password_hash
+                    'password' => crypterMdp($password)
                 ];
                 
                 $retour = ajouteUtilisateur($bdd, $values);
                 
                 if ($retour) {
-                    // On connecte directement l'utilisateur après son inscription
                     $nouvelUtilisateur = rechercheParEmail($bdd, $email);
                     $_SESSION['utilisateur'] = [
                         'id' => $nouvelUtilisateur['id'],
-                        'prenom' => $nouvelUtilisateur['prenom']
+                        'prenom' => $nouvelUtilisateur['prenom'],
+                        'role' => 'utilisateur'
                     ];
                     header('Location: index.php?cible=utilisateurs&fonction=accueil');
                     exit();
@@ -88,9 +90,8 @@ switch ($function) {
         break;
 
     case 'logout':
-        // **NOUVELLE FONCTION DE DÉCONNEXION**
-        session_unset();  // Supprime toutes les variables de session
-        session_destroy(); // Détruit la session
+        session_unset();
+        session_destroy();
         header('Location: index.php?cible=utilisateurs&fonction=login');
         exit();
         

@@ -1,20 +1,19 @@
 <?php
-// Fichier de connexion pour la base de données LOCALE (utilisateurs)
+// Fichier : modele/connexion.php (CORRIGÉ)
 
-$host_local = 'localhost';
-$dbname_local = 'APPFINALE'; // La base avec votre table 'utilisateurs'
-$user_local = 'root';
-$password_local = 'root'; // ou vide "" selon votre configuration MAMP/WAMP
+// 1. On charge la configuration d'abord
+require_once(__DIR__ . '/../config.php');
 
+// 2. On utilise les constantes de config.php DANS le try...catch
 try {
-    // On garde le nom de variable $bdd pour la compatibilité avec le code existant
+    // On se connecte à la BDD locale en utilisant les constantes
     $bdd = new PDO(
-        "mysql:host=$host_local;dbname=$dbname_local;charset=utf8",
-        $user_local,
-        $password_local,
+        "mysql:host=" . DB_HOST_LOCAL . ";dbname=" . DB_NAME_LOCAL . ";charset=utf8",
+        DB_USER_LOCAL,
+        DB_PASS_LOCAL,
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
 } catch(Exception $e) {
+    // Si la connexion échoue, on affiche une erreur claire
     die('Erreur de connexion à la base de données locale : '.$e->getMessage());
 }
-?>
