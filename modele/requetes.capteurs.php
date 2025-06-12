@@ -1,23 +1,45 @@
 <?php
-// Fichier : modele/requetes.capteurs.php
+// Fichier : modele/requetes.capteurs.php (VERSION FINALE, PROPRE ET CORRIGÉE)
 
 /**
- * Récupère les données d'une table de capteur spécifique.
- * @param PDO $bdd L'objet de connexion à la BDD.
- * @param string $nomTable Le nom exact de la table.
- * @return array Un tableau contenant les valeurs clés et l'historique.
+ * "Carte de traduction" pour les noms de colonnes incohérents de la BDD distante.
+ */
+function get_table_schema(string $nomTable): ?array {
+    $schemas = [
+        'Capteur_Son' => [
+            'valeur' => 'valeur',
+            'temps'  => 'temps'
+        ],
+        'CapteurLumiere' => [
+            'valeur' => 'valeur_luminosite',
+            'temps'  => 'date_mesure'
+        ],
+        'CapteurProximite' => [
+            'valeur' => 'Value',
+            'temps'  => 'Times'
+        ],
+        'CapteurGaz' => [
+            'valeur' => 'valeur',
+            'temps'  => 'temps'
+        ]
+    ];
+    return $schemas[$nomTable] ?? null;
+}
+
+/**
+ * Récupère les données d'une table de capteur, en s'adaptant à sa structure.
  */
 function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
-    $colonneValeur = 'valeur';
-    $colonneTemps = 'temps';
-
-    // Adapte les noms de colonnes si nécessaire
-    if ($nomTable === 'CapteurLumiere') {
-        $colonneValeur = 'valeur_luminosite';
-        $colonneTemps = 'date_mesure';
+    $schema = get_table_schema($nomTable);
+    if (!$schema) {
+        error_log("Schéma inconnu pour la table : {$nomTable}");
+        return ['latest' => null, 'min' => null, 'max' => null, 'average' => null, 'history' => []];
     }
 
+    $colonneValeur = $schema['valeur'];
+    $colonneTemps = $schema['temps'];
     $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
+    
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
               FROM {$nomTableSecurise} 
               ORDER BY `{$colonneTemps}` DESC 
@@ -46,17 +68,11 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
 }
 
 /**
- * Récupère les données du capteur Temp/Hum avec stats min/max.
- * @param PDO $bdd L'objet de connexion à la BDD.
- * @return array Un tableau contenant les valeurs clés et l'historique.
+ * Récupère les données du capteur Temp/Hum (cas spécial).
  */
 function recupererDonneesTempHum(PDO $bdd): array {
-    $nomTable = '`CapteurTempHum`'; // IMPORTANT: VÉRIFIEZ CE NOM DE TABLE
-
-    $query = "SELECT `temperature`, `humidite`, `temps` 
-              FROM {$nomTable} 
-              ORDER BY `temps` DESC 
-              LIMIT 50";
+    $nomTable = '`CapteurTempHum`'; // Assurez-vous que cette table existe sur la BDD distante
+    $query = "SELECT `temperature`, `humidite`, `temps` FROM {$nomTable} ORDER BY `temps` DESC LIMIT 50";
     
     try {
         $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
@@ -79,17 +95,48 @@ function recupererDonneesTempHum(PDO $bdd): array {
 }
 
 /**
- * **FONCTION AJOUTÉE QUI CORRIGE L'ERREUR FATALE**
- * Récupère un jeu de données détaillé pour le tableau de bord personnel.
- * @param PDO $bdd L'objet de connexion à la BDD commune.
- * @param string $nomTable Le nom de la table du capteur.
- * @return array Données détaillées pour l'affichage.
+ * Récupère la température externe via une API en utilisant cURL (plus robuste).
+ */
+function recupererTemperatureExterne(): ?float {
+    // URL CORRIGÉE avec & et non ¤
+    $url = "https://api.open-meteo.com/v1/forecast?latitude=48.85&longitude=2.35¤t_weather=true";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        error_log('Erreur cURL : ' . curl_error($ch));
+        curl_close($ch);
+        return null;
+    }
+    curl_close($ch);
+
+    $weather_data = json_decode($response, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE && isset($weather_data['current_weather']['temperature'])) {
+        return $weather_data['current_weather']['temperature'];
+    }
+    return null;
+}
+
+/**
+ * Récupère un jeu de données détaillé pour le tableau de bord personnel (accueil.php).
  */
 function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
-    $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
-    $colonneValeur = 'valeur';
-    $colonneTemps = 'temps';
+    $schema = get_table_schema($nomTable);
+    if (!$schema) {
+        error_log("Schéma inconnu pour la table lors de la récupération des données détaillées : {$nomTable}");
+        return [ 'live' => null, 'stats24h' => null, 'alerts' => [], 'history' => [] ];
+    }
     
+    $colonneValeur = $schema['valeur'];
+    $colonneTemps = $schema['temps'];
+    $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
     $hier = (new DateTime())->modify('-24 hours')->format('Y-m-d H:i:s');
 
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
@@ -119,7 +166,7 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
     ];
 
     $alertes = [];
-    $seuilAlerte = 80; // dB
+    $seuilAlerte = 80;
     foreach ($data24h as $mesure) {
         if ($mesure['valeur'] > $seuilAlerte) {
             $alertes[] = $mesure;
@@ -132,22 +179,4 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         'alerts'    => array_slice($alertes, 0, 5),
         'history'   => array_reverse($data24h)
     ];
-}
-// À la fin de modele/requetes.capteurs.php
-// ...
-function recupererTemperatureExterne(string $ville = 'Paris'): ?float {
-    $lat = 48.85;
-    $lon = 2.35;
-    
-    // CORRECTION ICI : Remplacer `¤t_weather` par `¤t_weather`
-    $url = "https://api.open-meteo.com/v1/forecast?latitude={$lat}&longitude={$lon}¤t_weather=true";
-    
-    $json_data = @file_get_contents($url);
-    if ($json_data === false) {
-        return null;
-    }
-    
-    $weather_data = json_decode($json_data, true);
-    
-    return $weather_data['current_weather']['temperature'] ?? null;
 }

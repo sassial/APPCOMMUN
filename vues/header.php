@@ -13,10 +13,9 @@
             <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=accueil#capteur">Capteur son</a></li>
             <li><a href="<?= BASE_PATH ?>/index.php?cible=capteurs&fonction=affichage">Autres capteurs</a></li>
             
-            <?php // On affiche le lien "Gestion" SEULEMENT si l'utilisateur est un admin
-            if (isset($_SESSION['utilisateur']['role']) && $_SESSION['utilisateur']['role'] === 'admin'): ?>
-                <li><a href="<?= BASE_PATH ?>/index.php?cible=capteurs&fonction=gestion">Gestion</a></li>
-            <?php endif; ?>
+            <?php if (isset($_SESSION['utilisateur']['role']) && $_SESSION['utilisateur']['role'] === 'admin'): ?>
+    <li><a href="<?= BASE_PATH ?>/index.php?cible=capteurs&fonction=gestion">Gestion</a></li>
+<?php endif; ?>
 
             <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=logout">Déconnexion</a></li>
 
