@@ -1,34 +1,23 @@
 <?php
-
 // Fichier : modele/requetes.capteurs.php
-// Version garantie sans erreur de syntaxe.
 
 /**
- * Récupère les données d'une table de capteur spécifique, en adaptant les noms de colonnes.
+ * Récupère les données d'une table de capteur spécifique.
  * @param PDO $bdd L'objet de connexion à la BDD.
  * @param string $nomTable Le nom exact de la table.
  * @return array Un tableau contenant les valeurs clés et l'historique.
  */
 function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
-    
-    // On définit les noms de colonnes par défaut
     $colonneValeur = 'valeur';
     $colonneTemps = 'temps';
 
-    // On adapte les noms en fonction de la table interrogée
+    // Adapte les noms de colonnes si nécessaire
     if ($nomTable === 'CapteurLumiere') {
         $colonneValeur = 'valeur_luminosite';
         $colonneTemps = 'date_mesure';
-    } 
-    // Ajoutez d'autres conditions si les autres tables ont des structures différentes
-    // else if ($nomTable === 'CapteurGaz') { 
-    //     $colonneValeur = 'valeur_ppm'; 
-    //     $colonneTemps = 'temps';
-    // }
+    }
 
     $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
-    
-    // On utilise les variables pour construire la requête
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
               FROM {$nomTableSecurise} 
               ORDER BY `{$colonneTemps}` DESC 
@@ -37,7 +26,7 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
     try {
         $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        // En cas d'erreur (ex: table ou colonne non trouvée), on renvoie un set vide.
+        error_log("Erreur SQL pour {$nomTable}: " . $e->getMessage());
         return ['latest' => null, 'min' => null, 'max' => null, 'average' => null, 'history' => []];
     }
 
@@ -56,8 +45,41 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
     ];
 }
 
+/**
+ * Récupère les données du capteur Temp/Hum avec stats min/max.
+ * @param PDO $bdd L'objet de connexion à la BDD.
+ * @return array Un tableau contenant les valeurs clés et l'historique.
+ */
+function recupererDonneesTempHum(PDO $bdd): array {
+    $nomTable = '`CapteurTempHum`'; // IMPORTANT: VÉRIFIEZ CE NOM DE TABLE
+
+    $query = "SELECT `temperature`, `humidite`, `temps` 
+              FROM {$nomTable} 
+              ORDER BY `temps` DESC 
+              LIMIT 50";
+    
+    try {
+        $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Erreur SQL pour CapteurTempHum: " . $e->getMessage());
+        return ['latest' => null, 'min_temp' => null, 'max_temp' => null, 'history' => []];
+    }
+
+    if (empty($historique)) {
+        return ['latest' => null, 'min_temp' => null, 'max_temp' => null, 'history' => []];
+    }
+
+    $temperatures = array_column($historique, 'temperature');
+    return [
+        'latest'  => ['temperature' => round($historique[0]['temperature'], 1), 'humidite' => round($historique[0]['humidite'], 1)],
+        'min_temp' => round(min($temperatures), 1),
+        'max_temp' => round(max($temperatures), 1),
+        'history' => array_reverse($historique) 
+    ];
+}
 
 /**
+ * **FONCTION AJOUTÉE QUI CORRIGE L'ERREUR FATALE**
  * Récupère un jeu de données détaillé pour le tableau de bord personnel.
  * @param PDO $bdd L'objet de connexion à la BDD commune.
  * @param string $nomTable Le nom de la table du capteur.
@@ -67,15 +89,8 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
     $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
     $colonneValeur = 'valeur';
     $colonneTemps = 'temps';
-
-    // S'assurer que les noms de colonnes sont corrects pour la table demandée
-    if ($nomTable === 'CapteurLumiere') {
-        $colonneValeur = 'valeur_luminosite';
-        $colonneTemps = 'date_mesure';
-    }
-
-    $maintenant = new DateTime();
-    $hier = (new DateTime())->modify('-24 hours');
+    
+    $hier = (new DateTime())->modify('-24 hours')->format('Y-m-d H:i:s');
 
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
               FROM {$nomTableSecurise} 
@@ -84,10 +99,11 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
 
     try {
         $statement = $bdd->prepare($query);
-        $statement->bindValue(':hier', $hier->format('Y-m-d H:i:s'));
+        $statement->bindValue(':hier', $hier);
         $statement->execute();
         $data24h = $statement->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
+        error_log("Erreur SQL pour données détaillées de {$nomTable}: " . $e->getMessage());
         return [ 'live' => null, 'stats24h' => null, 'alerts' => [], 'history' => [] ];
     }
 
@@ -99,10 +115,9 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
     $stats24h = [
         'min' => round(min($valeurs24h), 1),
         'max' => round(max($valeurs24h), 1),
-        'avg' => round(array_sum($valeurs24h), 1)
+        'avg' => round(array_sum($valeurs24h) / count($valeurs24h), 1)
     ];
 
-    // Simuler des alertes (valeurs dépassant un seuil)
     $alertes = [];
     $seuilAlerte = 80; // dB
     foreach ($data24h as $mesure) {
@@ -118,4 +133,3 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         'history'   => array_reverse($data24h)
     ];
 }
-

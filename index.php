@@ -1,20 +1,22 @@
 <?php
+// Fichier : APPCOMMUN/index.php
+
+// **TRÈS IMPORTANT** : Doit être la toute première instruction du script
+session_start(); 
 
 define('BASE_PATH', '/APPDEUX/APPCOMMUN');
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+// On inclut uniquement les fonctions globales utiles
 include_once("controleurs/fonctions.php");
-
-// SUPPRIMEZ CETTE LIGNE, ELLE NE SERT A RIEN ET CAUSE L'ERREUR
-// include("vues/fonctions.php");  <-- A SUPPRIMER
 
 // On identifie le contrôleur à appeler
 if (isset($_GET['cible']) && !empty($_GET['cible'])) {
     $url = $_GET['cible'];
 } else {
-    $url = 'utilisateurs'; // Page par défaut
+    $url = 'utilisateurs'; // Page par défaut (mène au login)
 }
 
 // On appelle le contrôleur
