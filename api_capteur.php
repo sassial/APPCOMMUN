@@ -1,5 +1,4 @@
 <?php
-// ... (début du fichier inchangé)
 
 if (isset($_GET['decibels']) && is_numeric($_GET['decibels'])) {
     $valeur_db = (float)$_GET['decibels'];
@@ -12,7 +11,7 @@ if (isset($_GET['decibels']) && is_numeric($_GET['decibels'])) {
 
         $statement = $bdd_commune->prepare($query);
         $statement->bindValue(':valeur_db', $valeur_db);
-        $statement->bindValue(':id_capteur', 1); // Mettez un ID fixe pour votre capteur, par exemple
+        $statement->bindValue(':id_capteur', 1);
         $statement->execute();
 
         http_response_code(200);
@@ -22,5 +21,4 @@ if (isset($_GET['decibels']) && is_numeric($_GET['decibels'])) {
         // ... (fin du fichier inchangée)
     }
 } 
-// ...
 ?>

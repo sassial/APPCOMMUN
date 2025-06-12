@@ -1,5 +1,4 @@
 <?php
-// On utilise un chemin plus robuste pour l'inclusion
 require_once(__DIR__ . '/connexion.php');
 
 /**

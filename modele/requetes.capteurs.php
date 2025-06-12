@@ -1,5 +1,5 @@
 <?php
-// Fichier : modele/requetes.capteurs.php
+require_once(__DIR__ . '/connexion.php');
 
 /**
  * Récupère un jeu de données détaillé pour le tableau de bord personnel.
