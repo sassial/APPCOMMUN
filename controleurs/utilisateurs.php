@@ -3,7 +3,6 @@
 
 require_once(__DIR__ . '/../modele/requetes.utilisateurs.php');
 require_once(__DIR__ . '/../modele/requetes.capteurs.php'); // Toujours nécessaire pour la page d'accueil
-require_once(__DIR__ . '/../modele/connexion_commune.php'); 
 
 $function = $_GET['fonction'] ?? 'login';
 

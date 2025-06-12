@@ -1,7 +1,6 @@
 <?php
 // Fichier: controleurs/capteurs.php
 
-require_once(__DIR__ . '/../modele/connexion_commune.php'); 
 require_once(__DIR__ . '/../modele/requetes.capteurs.php');
 
 $function = $_GET['fonction'] ?? 'affichage';
@@ -20,6 +19,8 @@ switch ($function) {
 
         $vue = "affichage";
         break;
+    
+    
         
     default:
         $vue = "erreur404";

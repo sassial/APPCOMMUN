@@ -1,5 +1,5 @@
 <?php
-// Fichier : modele/requetes.capteurs.php
+require_once(__DIR__ . '/connexion.php');
 
 /**
  * Récupère les données d'une table de capteur spécifique.
