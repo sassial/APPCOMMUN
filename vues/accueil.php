@@ -27,7 +27,7 @@
     </div>
     <div class="hero-image">
       <!-- remplacez par une belle photo d’ambiance -->
-      <img src="<?= BASE_PATH ?>/photo.jpg" alt="Gusteau’s">
+      <img src="/APPCOMMUN/photo.jpg" alt="Gusteau’s">
     </div>
   </section>
 
