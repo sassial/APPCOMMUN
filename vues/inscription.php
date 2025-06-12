@@ -51,6 +51,8 @@
         <button type="submit" class="btn-submit">S’inscrire</button>
       </form>
       
+      <<!-- ... tout le HTML de votre formulaire d'inscription ... -->
+
       <p class="login-link">
         Vous avez déjà un compte ? <a href="index.php?cible=utilisateurs&fonction=login">Connectez-vous</a>
       </p>
@@ -58,6 +60,20 @@
   </main>
 
   <?php include __DIR__ . '/footer.php'; ?>
+
+  <!-- **NOUVEAU SCRIPT DE VALIDATION** -->
+  <script>
+    const form = document.querySelector('.signup-form');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    form.addEventListener('submit', function(event) {
+      if (password.value !== confirmPassword.value) {
+        alert("Les mots de passe ne correspondent pas !");
+        event.preventDefault(); // Empêche l'envoi du formulaire
+      }
+    });
+  </script>
 
 </body>
 </html>
