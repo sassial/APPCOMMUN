@@ -418,12 +418,6 @@ body {
 }
 
 
-/* Style du header quand la page a été scrollée */
-.site-header.scrolled {
-  background-color: #fff;
-  border-bottom-color: var(--border-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
 /* -- Styles pour les cartes simples (Météo) -- */
 .card-content-simple {
     flex-grow: 1;

@@ -97,6 +97,68 @@ switch ($function) {
         
     default:
         $vue = "erreur404";
+        // ... (dans le switch)
+    
+    case 'forgot_password':
+        $vue = "forgot_password";
+        if (!empty($_POST['email'])) {
+            $email = nettoyerDonnees($_POST['email']);
+            // On vérifie que l'utilisateur existe bien
+            if (emailExiste($bdd, $email)) {
+                // On génère notre jeton intelligent
+                $token = genererTokenReset($email);
+                // On envoie l'email
+                envoyerEmailReset($email, $token);
+            }
+            $alerte = "Si cette adresse e-mail est enregistrée, un lien de réinitialisation a été envoyé.";
+        }
+        break;
+
+    case 'reset_password':
+        // Si le formulaire est soumis (l'utilisateur a entré un nouveau mot de passe)
+        if (!empty($_POST['token']) && !empty($_POST['password'])) {
+            $token = $_POST['token'];
+            $password = $_POST['password'];
+            $confirm_password = $_POST['confirm_password'];
+            
+            // On vérifie le jeton (signature et expiration)
+            $data_token = verifierTokenReset($token);
+
+            if (!$data_token) {
+                $alerte = "Le lien de réinitialisation est invalide ou a expiré.";
+                $vue = "forgot_password";
+            } elseif (strlen($password) < 6) {
+                $alerte = "Le mot de passe doit faire au moins 6 caractères.";
+                $vue = "reset_password";
+            } elseif ($password !== $confirm_password) {
+                $alerte = "Les mots de passe ne correspondent pas.";
+                $vue = "reset_password";
+            } else {
+                // Tout est bon, on met à jour le mot de passe
+                $email = $data_token['email'];
+                mettreAJourMotDePasse($bdd, $email, crypterMdp($password));
+                
+                $alerte = "Votre mot de passe a été réinitialisé avec succès ! Vous pouvez maintenant vous connecter.";
+                $vue = "login";
+            }
+        // Si l'utilisateur arrive depuis le lien dans son email
+        } elseif (!empty($_GET['token'])) {
+            $token = $_GET['token'];
+            $data_token = verifierTokenReset($token);
+            
+            if ($data_token) {
+                $vue = "reset_password"; // Affiche le formulaire
+            } else {
+                $alerte = "Le lien de réinitialisation est invalide ou a expiré.";
+                $vue = "forgot_password";
+            }
+        } else {
+            header('Location: index.php?cible=utilisateurs&fonction=login');
+            exit();
+        }
+        break;
+
+// ... (reste du switch)
 }
 
 require_once(__DIR__ . '/../vues/' . $vue . '.php');
