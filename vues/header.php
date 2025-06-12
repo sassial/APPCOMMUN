@@ -1,7 +1,7 @@
 <header class="site-header">
   <div class="header-container">
-    <a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=accueil" class="logo-link">
-      <img src="<?= BASE_PATH ?>/logo.jpg" alt="Logo Gusteau’s" class="logo"/>
+    <a href="/APPCOMMUN/style.css" class="logo-link">
+      <img src="logo.jpg" alt="Logo Gusteau’s" class="logo"/>
     </a>
     <nav class="main-nav">
       <ul>

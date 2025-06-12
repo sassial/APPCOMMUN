@@ -4,7 +4,7 @@
 $host_local = 'localhost';
 $dbname_local = 'APPFINALE'; // La base avec votre table 'utilisateurs'
 $user_local = 'root';
-$password_local = 'root'; // ou vide "" selon votre configuration MAMP/WAMP
+$password_local = ''; // ou vide "" selon votre configuration MAMP/WAMP
 
 try {
     // On garde le nom de variable $bdd pour la compatibilité avec le code existant
