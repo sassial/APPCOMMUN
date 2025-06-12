@@ -10,6 +10,7 @@
             <li><a href="#">Bienvenue, <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?></a></li>
             <li><a href="index.php?cible=utilisateurs&fonction=accueil#capteur">Capteur son</a></li>
             <li><a href="index.php?cible=capteurs&fonction=affichage">Autres capteurs</a></li>
+            <li><a href="index.php?cible=capteurs&fonction=gestion">Gestion Capteurs</a></li>
             <li><a href="index.php?cible=utilisateurs&fonction=logout">Déconnexion</a></li>
         <?php else: ?>
             <!-- Menu pour VISITEUR -->

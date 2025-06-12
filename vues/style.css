@@ -424,3 +424,125 @@ body {
   border-bottom-color: var(--border-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+
+/* ---------------------------------------------
+   PAGE GESTION DES CAPTEURS
+   --------------------------------------------- */
+.gestion-container {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Colonne de gauche : actifs / inactifs */
+.gestion-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.gestion-group {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.gestion-group h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+  color: var(--navy);
+}
+
+.capteur-list {
+  list-style: none;
+}
+
+.capteur-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.capteur-list li:last-child {
+  border-bottom: none;
+}
+
+.capteur-list button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--red);
+  transition: color 0.2s;
+}
+
+.capteur-list button:hover {
+  color: var(--red-dark);
+}
+
+/* Colonne de droite : réglage des seuils */
+.gestion-right {
+  flex: 1;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.gestion-right h3 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  color: var(--navy);
+}
+
+.seuil-item {
+  margin-bottom: 1.5rem;
+}
+
+.seuil-item label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.seuil-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.seuil-controls button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.seuil-controls button:hover {
+  background: var(--light-gray);
+}
+
+.seuil-value {
+  min-width: 50px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .gestion-container {
+    flex-direction: column;
+  }
+}
+
+
