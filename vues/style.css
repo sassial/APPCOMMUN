@@ -1,16 +1,36 @@
-/* styles.css */
+/* ============================================= */
+/*          STYLE.CSS - GUSTEAU'S APP            */
+/* ============================================= */
+/*  TABLE DES MATIÈRES
+    1. GLOBAL & VARIABLES
+    2. LAYOUT & COMPOSANTS GÉNÉRAUX
+    3. HEADER & FOOTER
+    4. PAGES SPÉCIFIQUES
+       - Formulaires (Login, Inscription, etc.)
+       - Tableau de Bord (Dashboard)
+       - Page de Gestion
+       - Page d'Accueil (Hero & Dashboard Perso)
+    5. RESPONSIVE DESIGN
+/* ============================================= */
 
-/* Variables de couleur */
+
+/* ============================================= */
+/*          1. GLOBAL & VARIABLES                */
+/* ============================================= */
 :root {
   --red: #C1272D;
-  --red-dark: #a81d22;    /* version sombre pour hover */
+  --red-dark: #a81d22;
   --gold: #F0C75E;
   --navy: #1B365D;
-  --light-gray: #F7F7F7;
-  --text-dark: #333;
+  --teal: #008080;
+  --light-gray: #f4f7fa;
+  --text-dark: #212529;
+  --text-light: #6c757d;
+  --border-color: #dee2e6;
+  --white: #fff;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Reset basique */
 * {
   margin: 0;
   padding: 0;
@@ -18,281 +38,570 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--light-gray);
   color: var(--text-dark);
   line-height: 1.6;
-}
-
-/* ---------------------------------------------
-   HEADER : logo et menu
-   --------------------------------------------- */
-
-.site-header {
-  background-color: var(--navy);
-  padding: 0.25rem 0;      /* header plus fin, plus de padding latéral ici */
-}
-
-.header-container {
-  /* on occupe toute la largeur + padding interne */
-  width: 100%;
-  max-width: none;
-  padding: 0 2rem;       
-  margin: 0;             
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  max-height: 80px;       /* plus gros logo */
-  width: auto;
-  margin-top: 8px;
-}
-
-/* nav identique à avant… */
-.main-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
-}
-
-.main-nav a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-}
-
-.main-nav a:hover,
-.main-nav a:focus {
-  background-color: rgba(255,255,255,0.1);
-}
-
-/* menu responsive inchangé… */
-@media (max-width: 600px) {
-  .header-container {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .main-nav ul {
-    flex-direction: column;
-    width: 100%;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-  .main-nav a {
-    display: block;
-    width: 100%;
-    padding: 0.75rem 1rem;
-  }
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 
-/* ---------------------------------------------
-   CONTENEUR PRINCIPAL (centrage des pages de forms)
-   --------------------------------------------- */
+/* ============================================= */
+/*      2. LAYOUT & COMPOSANTS GÉNÉRAUX          */
+/* ============================================= */
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 160px);
+  min-height: calc(100vh - 150px);
   padding: 2rem;
 }
 
-/* ---------------------------------------------
-   SIGNUP/CLOGIN CARD
-   --------------------------------------------- */
-.signup-card {
-  background: #fff;
+.container-full {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 2.5rem;
+  width: 100%;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  border: none;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 2rem;
-  max-width: 400px;
-  width: 100%;
-  text-align: center;
-}
-
-.signup-card h1 {
-  margin-bottom: 1.5rem;
-  color: var(--navy);
-}
-
-.signup-form .form-group {
-  text-align: left;
-  margin-bottom: 1rem;
-}
-
-.signup-form label {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-weight: 600;
-}
-
-.signup-form input {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
   font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
-
-.signup-form input:focus {
-  outline: none;
-  border-color: var(--red);
-  box-shadow: 0 0 0 2px rgba(193,39,45,0.2);
+.btn:hover {
+  transform: translateY(-2px);
 }
 
 .btn-submit {
   width: 100%;
-  padding: 0.8rem;
-  margin-top: 1rem;
   background-color: var(--red);
-  border: none;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  color: var(--white);
 }
-
 .btn-submit:hover {
   background-color: var(--red-dark);
 }
 
-.login-link {
-  margin-top: 1rem;
-  font-size: 0.9rem;
-}
-
-.login-link a {
-  color: var(--navy);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
-}
-
-/* ---------------------------------------------
-   FOOTER
-   --------------------------------------------- */
-.site-footer {
-  background-color: var(--navy);
-  color: #fff;
-  text-align: center;
+.alert-message {
   padding: 1rem;
-  font-size: 0.9rem;
-}
-
-/* ---------------------------------------------
-   HERO SECTION
-   --------------------------------------------- */
-.hero {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  background-color: var(--navy);
-  color: white;
-  padding: 2rem 2rem 4rem;
-}
-
-.hero-content {
-  flex: 1 1 300px;
-  max-width: 600px;
-}
-
-.hero-subtitle {
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--gold);
-  margin-bottom: 0.5rem;
-  font-size: 1.25rem;  
-  font-weight: 600;      
-}
-
-.hero-title {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.hero-text {
-  font-size: 1.1rem;
   margin-bottom: 1.5rem;
-}
-
-.btn-hero {
-  display: inline-block;
-  background-color: var(--gold);
-  color: var(--navy);
-  padding: 0.8rem 1.5rem;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: opacity 0.3s ease;
-}
-
-.btn-hero:hover {
-  opacity: 0.8;
-}
-
-.hero-image {
-  flex: 1 1 300px;
-  text-align: center;
-}
-
-.hero-image img {
-  max-width: 100%;
-  height: auto;
   border-radius: 8px;
-}
-
-/* ---------------------------------------------
-   SECTION CAPTEUR SON
-   --------------------------------------------- */
-.sensor-section {
-  padding: 3rem 2rem;
-  background-color: #fff;
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #a21c28;
+  border: 1px solid rgba(220, 53, 69, 0.2);
   text-align: center;
 }
 
-.sensor-section h2 {
-  font-size: 2rem;
+h1 {
   color: var(--navy);
+  text-align: center;
   margin-bottom: 2rem;
 }
 
-.sensor-card {
-  display: inline-block;
-  background: var(--light-gray);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  max-width: 400px;
-  width: 100%;
+
+/* ============================================= */
+/*          3. HEADER & FOOTER                   */
+/* ============================================= */
+.site-header {
+  background-color: var(--white); 
+  padding: 0.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.logo { max-height: 60px; width: auto; transition: transform 0.2s ease-in-out; }
+.logo:hover { transform: scale(1.05); }
+.main-nav ul { list-style: none; display: flex; align-items: center; gap: 0.5rem; }
+.main-nav a { color: var(--text-dark); text-decoration: none; font-weight: 600; padding: 0.75rem 1rem; border-radius: 6px; transition: color 0.2s ease, background-color 0.2s ease; }
+.main-nav a:hover { background-color: var(--light-gray); color: var(--navy); }
+
+.site-footer {
+  background-color: var(--navy);
+  color: var(--white);
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.9rem;
 }
 
-.sensor-label {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--text-dark);
-}
 
-.decibel-value {
-  font-size: 3rem;
-  color: var(--red);
+/* ============================================= */
+/*          4. PAGES SPÉCIFIQUES                 */
+/* ============================================= */
+
+/* --- Formulaires (Login, Inscription, etc.) --- */
+.signup-card {
+  max-width: 450px;
+}
+.signup-card h1 {
   margin-bottom: 1.5rem;
 }
+.signup-form .form-group {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+.signup-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.signup-form .input-wrapper {
+    position: relative;
+}
+.signup-form .input-wrapper .icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 15px;
+    color: #adb5bd;
+    transition: color 0.2s ease;
+}
+.signup-form .input-wrapper input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 45px; /* Padding à gauche pour l'icône */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.signup-form .input-wrapper input:focus {
+    outline: none;
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.15);
+}
+.signup-form .input-wrapper input:focus + .icon {
+    color: var(--navy);
+}
+.login-link { margin-top: 1.5rem; font-size: 0.9rem; }
+.login-link a { color: var(--navy); text-decoration: none; font-weight: 600; }
+.login-link a:hover { text-decoration: underline; }
 
-.sensor-chart {
-  border-top: 1px solid #ddd;
-  padding-top: 1.5rem;
+/* --- Tableau de Bord (Dashboard) - V2 (Cube Layout) --- */
+.dashboard-grid {
+    display: grid;
+    /* CORRECTION PRINCIPALE : On force une grille de 2 colonnes égales */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
 }
 
-.sensor-placeholder {
-  color: #666;
-  font-style: italic;
+/* DANS vues/style.css */
+
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    /* MODIFIEZ CETTE LIGNE */
+    min-height: 260px; /* Ancien: 300px */
+}
+
+.dashboard-card .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-card .card-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.dashboard-card .card-title {
+    font-size: 1.1rem;
+    color: var(--navy);
+    font-weight: 600;
+}
+
+.loader-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-card .card-content {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-card .card-stats {
+    /* On réduit la largeur de la colonne des stats pour donner plus de place au graph */
+    flex: 0 0 90px; 
+    padding-right: 1rem;
+    margin-right: 1rem;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.dashboard-card .stat-item { text-align: left; }
+.dashboard-card .stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+.dashboard-card .stat-value .unit { font-size: 0.9rem; font-weight: normal; margin-left: 0.25rem; }
+.dashboard-card .stat-label { font-size: 0.75rem; text-transform: uppercase; }
+
+/* DANS vues/style.css */
+
+.dashboard-card .card-chart-container {
+    flex: 1;
+    position: relative;
+    /* MODIFIEZ CETTE LIGNE */
+    min-height: 160px; /* Ancien: 200px */
+}
+
+/* Styles pour la carte Citation et Actionneurs */
+.card-content-simple {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* ... (les autres styles pour .big-value, .switch, etc. ne changent pas et sont inclus dans le bloc précédent) ... */
+
+/* Styles pour la carte Météo et Actionneurs */
+.card-content-simple {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.big-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--navy);
+}
+
+/* Styles pour le switch (actionneur) */
+.switch { position: relative; display: inline-block; width: 60px; height: 34px; margin-bottom: 0.5rem; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--teal); }
+input:focus + .slider { box-shadow: 0 0 1px var(--teal); }
+input:checked + .slider:before { transform: translateX(26px); }
+
+/* --- Page de Gestion --- */
+.gestion-container { display: flex; gap: 2rem; }
+.gestion-group { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow); flex: 1; }
+.gestion-group h3 { margin-top: 0; margin-bottom: 1.5rem; color: var(--navy); border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+.capteur-list { list-style: none; padding: 0; }
+.capteur-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0.25rem; border-bottom: 1px solid #f0f0f0; }
+.capteur-list li:last-child { border-bottom: none; }
+.capteur-list button { background: var(--light-gray); border: 1px solid #ccc; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; line-height: 1; transition: background-color 0.2s; }
+.capteur-list button:hover { background-color: #ddd; }
+
+/* --- Page d'Accueil (Hero & Dashboard Perso) --- */
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: var(--navy);
+    color: var(--white); /* Couleur de texte par défaut pour la section */
+    padding: 5rem 2rem;
+}
+
+.hero-content {
+    flex: 1 1 500px;
+    padding-right: 2rem;
+}
+
+.hero-subtitle {
+    color: var(--gold); /* Garde la couleur dorée */
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.hero-title {
+    color: var(--white); /* CORRECTION PRINCIPALE : Le titre est maintenant blanc */
+    font-size: 3.8rem; /* Un peu plus grand pour plus d'impact */
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.hero-text {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem; /* Un peu plus d'espace avant le bouton */
+    max-width: 500px;
+    color: rgba(255, 255, 255, 0.85); /* Blanc légèrement transparent pour un look plus doux */
+}
+
+.btn-hero {
+    background-color: var(--gold);
+    color: var(--navy);
+    padding: 1rem 2rem; /* Bouton plus grand */
+    font-size: 1.1rem;
+}
+
+.btn-hero:hover {
+    background-color: #ffda85;
+}
+
+.hero-image {
+    flex: 1 1 400px;
+    text-align: center;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.personal-dashboard { background-color: #f0f4f8; padding: 4rem 2rem; }
+.dashboard-header-perso { text-align: center; margin-bottom: 3rem; }
+.dashboard-header-perso h2 { font-size: 2.25rem; color: var(--navy); margin-bottom: 0.5rem; }
+.dashboard-header-perso p { font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: auto; }
+.dashboard-grid-perso { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; max-width: 1200px; margin: auto; }
+.personal-dashboard .card { background-color: var(--white); border-radius: 16px; padding: 1.5rem 2rem; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.personal-dashboard .card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.07); }
+.main-panel, .side-panel { display: flex; flex-direction: column; gap: 2rem; }
+.live-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.live-indicator-wrapper { display: flex; align-items: center; gap: 0.5rem; color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem; }
+.live-indicator { width: 10px; height: 10px; background-color: #28a745; border-radius: 50%; box-shadow: 0 0 12px #28a745; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+.live-value-container { display: flex; align-items: baseline; line-height: 1; }
+.live-value { font-size: 4.5rem; font-weight: 700; color: var(--navy); }
+.live-unit { font-size: 1.5rem; font-weight: 500; color: var(--text-light); margin-left: 0.5rem; }
+.live-gauge-container { width: 80%; max-width: 200px; margin-top: 1rem; }
+.stats-card h3 { font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--navy); text-align: center; font-weight: 600; }
+.stats-container { display: flex; justify-content: space-around; text-align: center; }
+.stat-item-perso .stat-label { display: block; font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; }
+.stat-item-perso .stat-value { font-size: 1.75rem; font-weight: 600; color: var(--navy); }
+.chart-card h4, .alerts-card h3 { font-size: 1.2rem; font-weight: 600; color: var(--navy); margin-bottom: 1rem; }
+.chart-container-perso { height: 280px; }
+.alerts-list { list-style: none; padding: 0; margin: 0; }
+.alerts-list li { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid #edf2f7; }
+.alerts-list li:last-child { border-bottom: none; }
+.alert-icon { font-size: 1.2rem; }
+.alert-value { font-weight: 600; color: var(--red); flex-grow: 1; }
+.alert-time { font-size: 0.9rem; color: var(--text-light); }
+.no-alerts { color: var(--text-light); }
+
+/* ============================================= */
+/*          5. RESPONSIVE DESIGN                 */
+/* ============================================= */
+/* Code corrigé et complet */
+@media (max-width: 992px) {
+    .hero { flex-direction: column; text-align: center; padding: 3rem 1.5rem; }
+    .hero-content { padding-right: 0; margin-bottom: 2rem; }
+    .dashboard-grid-perso { grid-template-columns: 1fr; }
+
+    /* LIGNE AJOUTÉE : La grille principale passe à 1 colonne sur tablette */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-container { flex-direction: column; gap: 1rem; padding-bottom: 1rem; }
+    .main-nav ul { flex-wrap: wrap; justify-content: center; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .dashboard-card .card-content { flex-direction: column; }
+    .dashboard-card .card-stats { border-right: none; border-bottom: 1px solid var(--border-color); padding: 0 0 1rem 0; margin-bottom: 1rem; }
+    .gestion-container { flex-direction: column; }
+    .hero-title { font-size: 2.5rem; }
+}
+
+/* --- FIX: Dashboard Card Layout --- */
+.dashboard-card .card-content {
+    display: flex;
+    flex-grow: 1;
+    gap: 1.5rem;
+    align-items: center; /* Aligne verticalement */
+}
+
+.dashboard-card .card-stats {
+    /* On donne une largeur fixe aux statistiques */
+    flex: 0 0 120px; /* Ne grandit pas, ne rétrécit pas, base de 120px */
+    padding-right: 1.5rem;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centre les stats verticalement */
+    gap: 0.5rem;
+}
+
+.dashboard-card .card-chart-container {
+    /* Le graphique prend toute la place restante */
+    flex-grow: 1;
+    position: relative;
+    min-height: 150px; /* Hauteur minimale pour le graphique */
+}
+/* --- Style pour la carte Citation --- */
+.quote-text {
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+.quote-author {
+    font-weight: 600;
+    text-align: right;
+    color: var(--navy);
+}
+
+/* --- FIX: Sticky Footer Layout --- */
+html, body {
+    height: 100%; /* Le HTML et le BODY prennent toute la hauteur de la fenêtre */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* On organise les éléments en colonne (header, main, footer) */
+}
+
+/* Cette règle cible TOUS les <main> de votre site */
+main {
+    flex: 1 0 auto; /* C'est la ligne magique ! */
+}
+
+/* --- Style pour l'indicateur de chargement (Spinner) --- */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--navy);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+.no-data-message {
+    width: 100%;
+    text-align: center;
+    color: #999;
+}
+.no-data-message i {
+    font-size: 2rem;
+    color: #ccc;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Style pour la liste de gestion des seuils --- */
+.seuil-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.seuil-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 1.5rem; /* Espace entre les éléments */
+}
+
+.seuil-list li:last-child {
+    border-bottom: none;
+}
+
+.seuil-nom {
+    font-weight: 600;
+    flex-grow: 1; /* Prend le plus de place possible */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Espace entre l'icône et le nom */
+}
+
+.seuil-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espace entre le champ et le bouton */
+}
+
+.seuil-form input[type="number"] {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 120px; /* Largeur fixe pour l'input */
+    text-align: right;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.seuil-form input[type="number"]:focus {
+    outline: none;
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.15);
+}
+
+.seuil-form .btn-save {
+    background-color: var(--teal);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.seuil-form .btn-save:hover {
+    background-color: #006666; /* Teal plus foncé */
+    transform: scale(1.1);
+}
+
+/* DANS vues/style.css */
+.data-wrapper {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+.loader {
+    position: absolute; /* Se place au-dessus du reste */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.dashboard-card .card-content {
+    display: flex; /* Permet de centrer le loader */
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
 }

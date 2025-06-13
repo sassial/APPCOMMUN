@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.1.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jun 11, 2025 at 03:24 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Host: localhost:3306
+-- Generation Time: Jun 13, 2025 at 11:11 AM
+-- Server version: 5.7.24
+-- PHP Version: 8.3.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,8 +18,57 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `APPFINALE`
+-- Database: `appfinale`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dispositifs`
+--
+
+CREATE TABLE `dispositifs` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(100) NOT NULL,
+  `type` enum('capteur','actionneur') NOT NULL,
+  `nom_table_bdd` varchar(100) NOT NULL COMMENT 'Nom de la table dans la BDD distante (gusto_g5)',
+  `seuil` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `dispositifs`
+--
+
+INSERT INTO `dispositifs` (`id`, `nom`, `type`, `nom_table_bdd`, `seuil`) VALUES
+(1, 'Son ambiant', 'capteur', 'Capteur_Son', NULL),
+(2, 'Lumière', 'capteur', 'CapteurLumiere', NULL),
+(3, 'Proximité', 'capteur', 'CapteurProximite', NULL),
+(4, 'Gaz', 'capteur', 'CapteurGaz', NULL),
+(5, 'Température & Humidité', 'capteur', 'CapteurTempHum', NULL),
+(6, 'Lumière Principale', 'actionneur', 'Lampe1', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `etats_actionneurs`
+--
+
+CREATE TABLE `etats_actionneurs` (
+  `id_dispositif` int(11) NOT NULL,
+  `etat` int(11) NOT NULL DEFAULT '0',
+  `derniere_modif` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `etats_actionneurs`
+--
+
+INSERT INTO `etats_actionneurs` (`id_dispositif`, `etat`, `derniere_modif`) VALUES
+(1, 1, '2025-06-13 10:03:50'),
+(2, 1, '2025-06-13 10:10:01'),
+(3, 0, '2025-06-13 10:48:07'),
+(4, 0, '2025-06-13 10:48:08'),
+(5, 0, '2025-06-13 10:48:09');
 
 -- --------------------------------------------------------
 
@@ -31,38 +80,58 @@ CREATE TABLE `utilisateurs` (
   `id` int(11) NOT NULL,
   `prenom` varchar(100) DEFAULT NULL,
   `nom` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` varchar(50) NOT NULL DEFAULT 'utilisateur'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `utilisateurs`
 --
 
-INSERT INTO `utilisateurs` (`id`, `prenom`, `nom`, `email`, `password`) VALUES
-(1, 'Alexandre', 'Sassi', 'alex29.sassi@gmail.com', '$2y$10$tFqey/Ie7IZ75HHxjQjuOO0xIbHXEIP1kn3hdZftziP.rz.jJNkg.'),
-(3, 'S', 'O', 'os@gmail.com', '$2y$10$8nTxKdp/dsZcm2A6DbRFBeoJcox9Z0T025DTIgX6OaYmiFDMFJ7ki'),
-(4, 'SA', 'OS', 'ossa@gmail.com', '$2y$10$3Srxf2wO/dYyydSChLdUPuRdYdh/Hr9oUv08btE04wwFMDyiVFW02');
+INSERT INTO `utilisateurs` (`id`, `prenom`, `nom`, `email`, `password`, `role`) VALUES
+(1, 'Admin', 'Gusto', 'admin@gusto.com', '$2y$10$pv1IYN9eyWINsn5t2UEY5OLEnBLIwcdElZR4RRL/fbrzzKcDWWu/C', 'admin'),
+(2, 'User', 'Test', 'user@gusto.com', '$2y$10$7R7i9x4jL.Hk.5o8Q2.Fk.LwA7S/G2.tY/bI.c3t.iY.nO7B.c4.m', 'utilisateur'),
+(3, 'Ruben', 'Legrand', 'legrandjacques.ruben@gmail.com', '$2y$10$QV5h1mksha7/5xkF50W5OuZxr4x5d4xmOBvkUbAtVUQEExFlK7SlK', 'utilisateur');
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `dispositifs`
+--
+ALTER TABLE `dispositifs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `etats_actionneurs`
+--
+ALTER TABLE `etats_actionneurs`
+  ADD PRIMARY KEY (`id_dispositif`);
+
+--
 -- Indexes for table `utilisateurs`
 --
 ALTER TABLE `utilisateurs`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
+-- AUTO_INCREMENT for table `dispositifs`
+--
+ALTER TABLE `dispositifs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `utilisateurs`
 --
 ALTER TABLE `utilisateurs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
