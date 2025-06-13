@@ -1,13 +1,7 @@
 <?php
-// Fichier : controleurs/utilisateurs.php
 
-// 1) BDD UTILISATEURS (locale)
 require_once __DIR__ . '/../modele/connexion.php';
-// 2) Requêtes utilisteurs
 require_once __DIR__ . '/../modele/requetes.utilisateurs.php';
-// 3) BDD CAPTEURS (commune)
-require_once __DIR__ . '/../modele/connexion_commune.php';
-// 4) Requêtes capteurs (pour recupererDonneesDetaillees)
 require_once __DIR__ . '/../modele/requetes.capteurs.php';
 
 $function = $_GET['fonction'] ?? 'login';
@@ -54,8 +48,43 @@ switch ($function) {
         break;
 
     case 'inscription':
-        $vue = 'inscription';
-        // … votre logique d’inscription existante …
+        $vue = "inscription";
+        if (!empty($_POST)) {
+            $prenom = nettoyerDonnees($_POST['prenom'] ?? '');
+            $nom = nettoyerDonnees($_POST['nom'] ?? '');
+            $email = nettoyerDonnees($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $confirm_password = $_POST['confirm_password'] ?? '';
+
+            if ($password !== $confirm_password) {
+                $alerte = "Les mots de passe ne correspondent pas.";
+            } elseif (emailExiste($bdd, $email)) {
+                $alerte = "Cette adresse e-mail est déjà utilisée.";
+            } else {
+                // Tout est bon, on peut créer l'utilisateur
+                $values = [
+                    'prenom'   => $prenom,
+                    'nom'      => $nom,
+                    'email'    => $email,
+                    'password' => crypterMdp($password) // crypterMdp utilise password_hash
+                ];
+                
+                $retour = ajouteUtilisateur($bdd, $values);
+                
+                if ($retour) {
+                    // On connecte directement l'utilisateur après son inscription
+                    $nouvelUtilisateur = rechercheParEmail($bdd, $email);
+                    $_SESSION['utilisateur'] = [
+                        'id' => $nouvelUtilisateur['id'],
+                        'prenom' => $nouvelUtilisateur['prenom']
+                    ];
+                    header('Location: index.php?cible=utilisateurs&fonction=accueil');
+                    exit();
+                } else {
+                    $alerte = "Une erreur est survenue. L'inscription a échoué.";
+                }
+            }
+        }
         break;
 
     case 'logout':

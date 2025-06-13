@@ -1,10 +1,8 @@
 <?php
 // controleurs/capteurs.php
-session_start();
 
 // 1) Chargement des connexions
-require_once __DIR__ . '/../modele/connexion_commune.php'; // $bdd_commune
-require_once __DIR__ . '/../modele/connexion.php';         // $bdd
+require_once __DIR__ . '/../modele/connexion.php';
 require_once __DIR__ . '/../modele/requetes.capteurs.php';
 
 // 2) Traitement des POST (toggle / updateSeuil)
