@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Gestion des Dispositifs</title>
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
+    <link rel="stylesheet" href="/APPCOMMUN/vues/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <?php include __DIR__ . '/header.php'; ?>
+    <div class="back">
     <main class="container-full">
         <h1>Gestion des Dispositifs</h1>
 
@@ -66,6 +67,7 @@
 </ul>
         </div>
     </main>
+    </div>
     <?php include __DIR__ . '/footer.php'; ?>
 </body>
 </html>

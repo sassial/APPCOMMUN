@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Réinitialiser le mot de passe – Gusteau’s</title>
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
+    <link rel="stylesheet" href="/APPCOMMUN/vues/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
