@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Accueil – Gusteau’s</title>
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
+    <link rel="stylesheet" href="/APPCOMMUN/vues/style.css">
     <!-- On inclut Chart.js et l'adaptateur de date -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
@@ -28,7 +28,7 @@
             <a href="#dashboard" class="btn btn-hero">Voir mon tableau de bord</a>
         </div>
         <div class="hero-image">
-            <img src="<?= BASE_PATH ?>/photo.jpg" alt="Intérieur du restaurant Gusteau’s">
+            <img src="photo.jpg" alt="Intérieur du restaurant Gusteau’s">
         </div>
     </section>
 

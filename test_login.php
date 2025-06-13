@@ -11,7 +11,7 @@ echo "<h1>Début du test de connexion</h1>";
 $host = 'localhost';
 $dbname = 'APPFINALE';
 $user = 'root';
-$pass = 'root'; // ou '' sur WAMP
+$pass = ''; // ou '' sur WAMP
 
 try {
     $bdd = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);

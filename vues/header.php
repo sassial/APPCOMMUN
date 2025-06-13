@@ -1,7 +1,7 @@
 <header class="site-header">
   <div class="header-container">
-    <a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=accueil" class="logo-link">
-      <img src="<?= BASE_PATH ?>/logo.jpg" alt="Logo Gusteau’s" class="logo"/>
+    <a href="index.php?cible=utilisateurs&fonction=accueil" class="logo-link">
+      <img src="logo.jpg" alt="Logo Gusteau’s" class="logo"/>
     </a>
     <nav class="main-nav">
       <ul>
@@ -10,11 +10,11 @@
             <!--   MENU POUR UTILISATEUR CONNECTÉ -->
             <!-- =============================== -->
             <li><a href="#">Bienvenue, <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?></a></li>
-            <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=accueil#capteur">Capteur son</a></li>
-            <li><a href="<?= BASE_PATH ?>/index.php?cible=capteurs&fonction=affichage">Autres capteurs</a></li>
+            <li><a href="index.php?cible=utilisateurs&fonction=accueil#capteur">Capteur son</a></li>
+            <li><a href="index.php?cible=capteurs&fonction=affichage">Autres capteurs</a></li>
             
             <?php if (isset($_SESSION['utilisateur']['role']) && $_SESSION['utilisateur']['role'] === 'admin'): ?>
-    <li><a href="<?= BASE_PATH ?>/index.php?cible=capteurs&fonction=gestion">Gestion</a></li>
+    <li><a href="index.php?cible=capteurs&fonction=gestion">Gestion</a></li>
 <?php endif; ?>
 
             <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=logout">Déconnexion</a></li>
@@ -23,8 +23,8 @@
             <!-- =============================== -->
             <!--      MENU POUR VISITEUR NON CONNECTÉ     -->
             <!-- =============================== -->
-            <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=login">Connexion</a></li>
-            <li><a href="<?= BASE_PATH ?>/index.php?cible=utilisateurs&fonction=inscription">Inscription</a></li>
+            <li><a href="index.php?cible=utilisateurs&fonction=login">Connexion</a></li>
+            <li><a href="index.php?cible=utilisateurs&fonction=inscription">Inscription</a></li>
         <?php endif; ?>
       </ul>
     </nav>
