@@ -72,7 +72,13 @@ function verifierTokenReset(string $token): ?array {
 
 function envoyerEmailReset(string $email_destinataire, string $token): bool {
     $mail = new PHPMailer(true);
-    $reset_link = "http://localhost/APPDEUX/APPCOMMUN/index.php?cible=utilisateurs&fonction=reset_password&token=" . urlencode($token);
+   // LIGNE CORRIGÉE
+// DANS : controleurs/fonctions.php
+
+// LA MEILLEURE SOLUTION (plus robuste)
+$host = $_SERVER['HTTP_HOST']; // Récupère 'localhost' ou votre domaine
+$base_path = BASE_PATH;       // Utilise la constante globale que nous avons déjà corrigée
+$reset_link = "http://{$host}{$base_path}/index.php?cible=utilisateurs&fonction=reset_password&token=" . urlencode($token);
 
     try {
         // --- Activation du mode débogage pour trouver le problème ---

@@ -1,8 +1,8 @@
 <?php
-// Fichier : modele/requetes.capteurs.php (VERSION FINALE, PROPRE ET CORRIGÉE)
+// Fichier : modele/requetes.capteurs.php (VERSION CORRIGÉE ET COMPLÈTE)
 
 /**
- * "Carte de traduction" pour les noms de colonnes incohérents de la BDD distante.
+ * "Carte de traduction" pour les noms de colonnes et de tables incohérents.
  */
 function get_table_schema(string $nomTable): ?array {
     $schemas = [
@@ -15,12 +15,17 @@ function get_table_schema(string $nomTable): ?array {
             'temps'  => 'date_mesure'
         ],
         'CapteurProximite' => [
-            'valeur' => 'Value',
-            'temps'  => 'Times'
+            'valeur' => 'Value', // Attention à la majuscule
+            'temps'  => 'Times'  // Attention à la majuscule
         ],
         'CapteurGaz' => [
             'valeur' => 'valeur',
             'temps'  => 'temps'
+        ],
+        // Le nom de la table est en minuscules dans la BDD
+        'capteur_temp_hum' => [
+            'valeur' => 'temperature',
+            'temps'  => 'horodatage'
         ]
     ];
     return $schemas[$nomTable] ?? null;
@@ -71,13 +76,13 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
  * Récupère les données du capteur Temp/Hum (cas spécial).
  */
 function recupererDonneesTempHum(PDO $bdd): array {
-    $nomTable = '`CapteurTempHum`'; // Assurez-vous que cette table existe sur la BDD distante
-    $query = "SELECT `temperature`, `humidite`, `temps` FROM {$nomTable} ORDER BY `temps` DESC LIMIT 50";
+    $nomTable = '`capteur_temp_hum`'; 
+    $query = "SELECT `temperature`, `humidite`, `horodatage` AS temps FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 50";
     
     try {
         $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log("Erreur SQL pour CapteurTempHum: " . $e->getMessage());
+        error_log("Erreur SQL pour capteur_temp_hum: " . $e->getMessage());
         return ['latest' => null, 'min_temp' => null, 'max_temp' => null, 'history' => []];
     }
 
@@ -87,10 +92,10 @@ function recupererDonneesTempHum(PDO $bdd): array {
 
     $temperatures = array_column($historique, 'temperature');
     return [
-        'latest'  => ['temperature' => round($historique[0]['temperature'], 1), 'humidite' => round($historique[0]['humidite'], 1)],
+        'latest'   => ['temperature' => round($historique[0]['temperature'], 1), 'humidite' => round($historique[0]['humidite'], 1)],
         'min_temp' => round(min($temperatures), 1),
         'max_temp' => round(max($temperatures), 1),
-        'history' => array_reverse($historique) 
+        'history'  => array_reverse($historique) 
     ];
 }
 
@@ -98,7 +103,6 @@ function recupererDonneesTempHum(PDO $bdd): array {
  * Récupère la température externe via une API en utilisant cURL (plus robuste).
  */
 function recupererTemperatureExterne(): ?float {
-    // URL CORRIGÉE avec & et non ¤
     $url = "https://api.open-meteo.com/v1/forecast?latitude=48.85&longitude=2.35¤t_weather=true";
     
     $ch = curl_init();
@@ -107,6 +111,9 @@ function recupererTemperatureExterne(): ?float {
     curl_setopt($ch, CURLOPT_HEADER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); // <-- AJOUTER CETTE LIGNE (10 secondes)
+    
+    // ... le reste de la fonction ne change pas
     $response = curl_exec($ch);
 
     if (curl_errno($ch)) {
@@ -121,12 +128,11 @@ function recupererTemperatureExterne(): ?float {
     if (json_last_error() === JSON_ERROR_NONE && isset($weather_data['current_weather']['temperature'])) {
         return $weather_data['current_weather']['temperature'];
     }
+    error_log('Erreur decodage JSON ou temperature non trouvée: ' . json_last_error_msg());
     return null;
 }
 
-/**
- * Récupère un jeu de données détaillé pour le tableau de bord personnel (accueil.php).
- */
+// Le reste du fichier (recupererDonneesDetaillees) reste inchangé...
 function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
     $schema = get_table_schema($nomTable);
     if (!$schema) {
@@ -162,7 +168,7 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
     $stats24h = [
         'min' => round(min($valeurs24h), 1),
         'max' => round(max($valeurs24h), 1),
-        'avg' => round(array_sum($valeurs24h) / count($valeurs24h), 1)
+        'avg' => round(array_sum($valeurs24h), 1)
     ];
 
     $alertes = [];
@@ -179,4 +185,37 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         'alerts'    => array_slice($alertes, 0, 5),
         'history'   => array_reverse($data24h)
     ];
+}
+/**
+ * Récupère une citation aléatoire via une API externe.
+ * @return array|null Un tableau avec 'texte' and 'auteur', ou null si échec.
+ */
+function recupererCitationDuJour(): ?array {
+    $url = "https://api.quotable.io/random?language=fr"; // API simple et sans clé
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        error_log('Erreur cURL pour citation : ' . curl_error($ch));
+        curl_close($ch);
+        return null;
+    }
+    curl_close($ch);
+
+    $data = json_decode($response, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE && isset($data['content'], $data['author'])) {
+        return [
+            'texte'  => $data['content'],
+            'auteur' => $data['author']
+        ];
+    }
+    return null;
 }

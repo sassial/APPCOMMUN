@@ -138,7 +138,7 @@ case 'login':
             } else {
                 $email = $data_token['email'];
                 mettreAJourMotDePasse($bdd, $email, crypterMdp($password));
-                supprimerToken($bdd, $email); // Si vous utilisez la méthode avec BDD
+               
                 $alerte = "Votre mot de passe a été réinitialisé avec succès !";
                 $vue = "login";
             }

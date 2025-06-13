@@ -45,3 +45,18 @@ function ajouteUtilisateur(PDO $bdd, array $utilisateur): bool {
     $donnees->bindParam(":password", $utilisateur['password'], PDO::PARAM_STR);
     return $donnees->execute();
 }
+
+/**
+ * Met à jour le mot de passe d'un utilisateur identifié par son email.
+ * @param PDO $bdd L'objet de connexion.
+ * @param string $email L'email de l'utilisateur à mettre à jour.
+ * @param string $password_hache Le nouveau mot de passe déjà haché.
+ * @return bool True si la mise à jour a réussi, false sinon.
+ */
+function mettreAJourMotDePasse(PDO $bdd, string $email, string $password_hache): bool {
+    $query = 'UPDATE utilisateurs SET password = :password WHERE email = :email';
+    $statement = $bdd->prepare($query);
+    $statement->bindParam(':password', $password_hache, PDO::PARAM_STR);
+    $statement->bindParam(':email', $email, PDO::PARAM_STR);
+    return $statement->execute();
+}

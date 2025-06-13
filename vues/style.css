@@ -199,22 +199,111 @@ h1 {
 .login-link a { color: var(--navy); text-decoration: none; font-weight: 600; }
 .login-link a:hover { text-decoration: underline; }
 
-/* --- Tableau de Bord (Dashboard) --- */
-.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
-.dashboard-card { display: flex; flex-direction: column; }
-.dashboard-card .card-header { display: flex; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
-.dashboard-card .card-icon { font-size: 1.5rem; margin-right: 1rem; }
-.dashboard-card .card-title { font-size: 1.25rem; color: var(--navy); font-weight: 600; }
-.dashboard-card .card-content { display: flex; flex-grow: 1; gap: 1.5rem; }
-.dashboard-card .card-stats { display: flex; flex-direction: column; justify-content: space-around; }
+/* --- Tableau de Bord (Dashboard) - V2 (Cube Layout) --- */
+.dashboard-grid {
+    display: grid;
+    /* CORRECTION PRINCIPALE : On force une grille de 2 colonnes égales */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+/* DANS vues/style.css */
+
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    /* MODIFIEZ CETTE LIGNE */
+    min-height: 260px; /* Ancien: 300px */
+}
+
+.dashboard-card .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-card .card-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.dashboard-card .card-title {
+    font-size: 1.1rem;
+    color: var(--navy);
+    font-weight: 600;
+}
+
+.loader-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-card .card-content {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.dashboard-card .card-stats {
+    /* On réduit la largeur de la colonne des stats pour donner plus de place au graph */
+    flex: 0 0 90px; 
+    padding-right: 1rem;
+    margin-right: 1rem;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
 .dashboard-card .stat-item { text-align: left; }
-.dashboard-card .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--text-dark); }
-.dashboard-card .stat-value .unit { font-size: 1rem; font-weight: normal; color: var(--text-light); margin-left: 0.25rem; }
-.dashboard-card .stat-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-light); }
-.dashboard-card .card-chart-container { flex-grow: 1; position: relative; min-height: 100px; }
-.card-content-simple { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-.big-value { font-size: 3rem; font-weight: 700; color: var(--navy); }
-.switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+.dashboard-card .stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+.dashboard-card .stat-value .unit { font-size: 0.9rem; font-weight: normal; margin-left: 0.25rem; }
+.dashboard-card .stat-label { font-size: 0.75rem; text-transform: uppercase; }
+
+/* DANS vues/style.css */
+
+.dashboard-card .card-chart-container {
+    flex: 1;
+    position: relative;
+    /* MODIFIEZ CETTE LIGNE */
+    min-height: 160px; /* Ancien: 200px */
+}
+
+/* Styles pour la carte Citation et Actionneurs */
+.card-content-simple {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* ... (les autres styles pour .big-value, .switch, etc. ne changent pas et sont inclus dans le bloc précédent) ... */
+
+/* Styles pour la carte Météo et Actionneurs */
+.card-content-simple {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.big-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--navy);
+}
+
+/* Styles pour le switch (actionneur) */
+.switch { position: relative; display: inline-block; width: 60px; height: 34px; margin-bottom: 0.5rem; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
 .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
@@ -233,15 +322,65 @@ input:checked + .slider:before { transform: translateX(26px); }
 .capteur-list button:hover { background-color: #ddd; }
 
 /* --- Page d'Accueil (Hero & Dashboard Perso) --- */
-.hero { display: flex; flex-wrap: wrap; align-items: center; background-color: var(--navy); color: white; padding: 5rem 2rem; }
-.hero-content { flex: 1 1 500px; padding-right: 2rem; }
-.hero-subtitle { color: var(--gold); margin-bottom: 0.5rem; font-weight: 600; }
-.hero-title { font-size: 3.5rem; margin-bottom: 1rem; font-weight: 700; line-height: 1.2; }
-.hero-text { font-size: 1.1rem; margin-bottom: 2rem; max-width: 500px; }
-.btn-hero { background-color: var(--gold); color: var(--navy); }
-.btn-hero:hover { background-color: #ffda85; }
-.hero-image { flex: 1 1 400px; text-align: center; }
-.hero-image img { max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: var(--navy);
+    color: var(--white); /* Couleur de texte par défaut pour la section */
+    padding: 5rem 2rem;
+}
+
+.hero-content {
+    flex: 1 1 500px;
+    padding-right: 2rem;
+}
+
+.hero-subtitle {
+    color: var(--gold); /* Garde la couleur dorée */
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.hero-title {
+    color: var(--white); /* CORRECTION PRINCIPALE : Le titre est maintenant blanc */
+    font-size: 3.8rem; /* Un peu plus grand pour plus d'impact */
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.hero-text {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem; /* Un peu plus d'espace avant le bouton */
+    max-width: 500px;
+    color: rgba(255, 255, 255, 0.85); /* Blanc légèrement transparent pour un look plus doux */
+}
+
+.btn-hero {
+    background-color: var(--gold);
+    color: var(--navy);
+    padding: 1rem 2rem; /* Bouton plus grand */
+    font-size: 1.1rem;
+}
+
+.btn-hero:hover {
+    background-color: #ffda85;
+}
+
+.hero-image {
+    flex: 1 1 400px;
+    text-align: center;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
 .personal-dashboard { background-color: #f0f4f8; padding: 4rem 2rem; }
 .dashboard-header-perso { text-align: center; margin-bottom: 3rem; }
 .dashboard-header-perso h2 { font-size: 2.25rem; color: var(--navy); margin-bottom: 0.5rem; }
@@ -275,10 +414,16 @@ input:checked + .slider:before { transform: translateX(26px); }
 /* ============================================= */
 /*          5. RESPONSIVE DESIGN                 */
 /* ============================================= */
+/* Code corrigé et complet */
 @media (max-width: 992px) {
     .hero { flex-direction: column; text-align: center; padding: 3rem 1.5rem; }
     .hero-content { padding-right: 0; margin-bottom: 2rem; }
     .dashboard-grid-perso { grid-template-columns: 1fr; }
+
+    /* LIGNE AJOUTÉE : La grille principale passe à 1 colonne sur tablette */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
@@ -289,4 +434,174 @@ input:checked + .slider:before { transform: translateX(26px); }
     .dashboard-card .card-stats { border-right: none; border-bottom: 1px solid var(--border-color); padding: 0 0 1rem 0; margin-bottom: 1rem; }
     .gestion-container { flex-direction: column; }
     .hero-title { font-size: 2.5rem; }
+}
+
+/* --- FIX: Dashboard Card Layout --- */
+.dashboard-card .card-content {
+    display: flex;
+    flex-grow: 1;
+    gap: 1.5rem;
+    align-items: center; /* Aligne verticalement */
+}
+
+.dashboard-card .card-stats {
+    /* On donne une largeur fixe aux statistiques */
+    flex: 0 0 120px; /* Ne grandit pas, ne rétrécit pas, base de 120px */
+    padding-right: 1.5rem;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centre les stats verticalement */
+    gap: 0.5rem;
+}
+
+.dashboard-card .card-chart-container {
+    /* Le graphique prend toute la place restante */
+    flex-grow: 1;
+    position: relative;
+    min-height: 150px; /* Hauteur minimale pour le graphique */
+}
+/* --- Style pour la carte Citation --- */
+.quote-text {
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+.quote-author {
+    font-weight: 600;
+    text-align: right;
+    color: var(--navy);
+}
+
+/* --- FIX: Sticky Footer Layout --- */
+html, body {
+    height: 100%; /* Le HTML et le BODY prennent toute la hauteur de la fenêtre */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* On organise les éléments en colonne (header, main, footer) */
+}
+
+/* Cette règle cible TOUS les <main> de votre site */
+main {
+    flex: 1 0 auto; /* C'est la ligne magique ! */
+}
+
+/* --- Style pour l'indicateur de chargement (Spinner) --- */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--navy);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+.no-data-message {
+    width: 100%;
+    text-align: center;
+    color: #999;
+}
+.no-data-message i {
+    font-size: 2rem;
+    color: #ccc;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Style pour la liste de gestion des seuils --- */
+.seuil-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.seuil-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 1.5rem; /* Espace entre les éléments */
+}
+
+.seuil-list li:last-child {
+    border-bottom: none;
+}
+
+.seuil-nom {
+    font-weight: 600;
+    flex-grow: 1; /* Prend le plus de place possible */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Espace entre l'icône et le nom */
+}
+
+.seuil-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espace entre le champ et le bouton */
+}
+
+.seuil-form input[type="number"] {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    width: 120px; /* Largeur fixe pour l'input */
+    text-align: right;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.seuil-form input[type="number"]:focus {
+    outline: none;
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.15);
+}
+
+.seuil-form .btn-save {
+    background-color: var(--teal);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.seuil-form .btn-save:hover {
+    background-color: #006666; /* Teal plus foncé */
+    transform: scale(1.1);
+}
+
+/* DANS vues/style.css */
+.data-wrapper {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+.loader {
+    position: absolute; /* Se place au-dessus du reste */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.dashboard-card .card-content {
+    display: flex; /* Permet de centrer le loader */
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
 }

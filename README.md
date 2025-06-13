@@ -1,280 +1,159 @@
 
-# APPCOMMUN – Projet de Surveillance par Capteurs - Gusteau's
 
-Ce projet est une application web complète développée en PHP, conçue pour surveiller et interagir avec divers capteurs et actionneurs en temps réel. Elle propose :
-- Un tableau de bord dynamique
-- Un système d'authentification robuste
-- Une gestion centralisée des dispositifs
-- Des alertes automatiques par email
+# 🚀 Projet Gusteau's : Surveillance Intelligente et Éco-Conçue
+
+Bienvenue sur le projet de surveillance connectée du restaurant **Gusteau's**. Cette application web complète, développée en PHP, offre un suivi en temps réel de multiples capteurs (son, lumière, température, etc.) et permet de contrôler des actionneurs.
+
+Le projet a été pensé avec une double exigence : offrir une **expérience utilisateur riche et réactive**, tout en intégrant des **principes d'éco-conception** pour minimiser son empreinte énergétique.
 
 ---
 
 ## 📑 Table des Matières
 
-- [Fonctionnalités](#fonctionnalités)
-- [Prérequis](#prérequis)
-- [Installation (de Zéro au Site Fonctionnel)](#installation-de-zéro-au-site-fonctionnel)
-  - Étape 1 : Récupérer le Code Source
-  - Étape 2 : Installer les Dépendances
-  - Étape 3 : Configurer la Base de Données Locale (APPFINALE)
-  - Étape 4 : Configurer le Fichier `config.php`
-- [Utilisation](#utilisation)
-- [Comptes Utilisateurs](#comptes-utilisateurs)
-- [Tester les Alertes par Email](#tester-les-alertes-par-email)
-- [Structure du Projet](#structure-du-projet)
-- [Détails des APIs](#détails-des-apis)
-- [Dépannage](#dépannage)
+- [✨ Fonctionnalités Clés](#-fonctionnalités-clés)
+- [🛠️ Technologies Utilisées](#-technologies-utilisées)
+- [🌍 L'Éco-Conception au Cœur du Projet](#-léco-conception-au-cœur-du-projet)
+- [⚙️ Installation (Guide Complet)](#-installation-guide-complet)
+- [👤 Utilisation et Comptes](#-utilisation-et-comptes)
+- [🔌 Architecture des APIs](#-architecture-des-apis)
+- [💡 Prochaines Améliorations](#-prochaines-améliorations)
 
 ---
 
-## ✅ Fonctionnalités
+## ✨ Fonctionnalités Clés
 
-### Fonctionnalités de base
-- ✅ Page d'accueil avec tableau de bord
-- ✅ Système d'authentification (admin/utilisateur)
-- ✅ Gestion des capteurs et actionneurs
-- ✅ Affichage des données en temps réel
+### Pour tous les utilisateurs :
+-   ✅ **Tableau de Bord Personnel** : Un accueil personnalisé avec un focus sur le capteur sonore, affichant des statistiques sur 24h et un historique visuel.
+-   ✅ **Dashboard Multi-Capteurs** : Une vue centralisée et *live* de tous les capteurs actifs (son, lumière, proximité, gaz, température & humidité).
+-   ✅ **Authentification Sécurisée** : Système d'inscription et de connexion complet, avec mots de passe hachés (BCrypt) et protection des sessions.
+-   ✅ **Récupération de Mot de Passe** : Processus sécurisé par e-mail avec jetons (tokens) à durée de vie limitée.
+-   ✅ **Service Externe Intégré** : Affiche une "citation du jour" pour enrichir l'interface.
 
-### Fonctionnalités avancées
-- ✅ Graphiques pour l’historique des capteurs
-- ✅ Récupération météo via API externe
-- 🟡 **Alertes par email** lorsque des seuils sont dépassés *(nécessite configuration SMTP)*
-
----
-
-## 🛠️ Prérequis
-
-Vous devez avoir les logiciels suivants installés :
-
-- **PHP ≥ 7.4** (vérifiez avec `php -v`)
-- **MySQL**
-- **Un serveur local** :
-  - Pour **Windows** : [WampServer](https://www.wampserver.com/)
-  - Pour **macOS** : [MAMP](https://www.mamp.info/en/)
-- **Composer** : [composer.org](https://getcomposer.org)
-- **Git** : [git-scm.com](https://git-scm.com)
-
-> 💡 **macOS :** Avec MAMP, placez le projet dans `/Applications/MAMP/htdocs` et accédez à l’URL via `http://localhost:8888/`.
+### Pour les administrateurs :
+-   ✅ **Gestion Centralisée des Dispositifs** : Une interface simple pour activer ou désactiver les capteurs qui apparaissent sur le tableau de bord.
+-   ✅ **Configuration des Alertes par E-mail** : Possibilité de définir des seuils de déclenchement personnalisés pour chaque capteur directement depuis l'interface de gestion.
+-   ✅ **Système d'Alertes Automatisé** : Envoi d'e-mails via SMTP lorsqu'un seuil est dépassé, permettant une réactivité immédiate.
+-   ✅ **Contrôle des Actionneurs** : Possibilité d'allumer ou d'éteindre des dispositifs (ex: une lumière) à distance.
 
 ---
 
-## 🚀 Installation (de Zéro au Site Fonctionnel)
+## 🛠️ Technologies Utilisées
 
-### Étape 1 : Récupérer le Code Source
+-   **Backend** : PHP 8+
+-   **Frontend** : HTML5, CSS3, JavaScript (vanilla)
+-   **Base de Données** : MySQL / MariaDB (avec deux connexions : une locale pour la gestion, une distante pour les données des capteurs)
+-   **Librairies** :
+    -   `PHPMailer` : Pour l'envoi fiable d'e-mails via SMTP.
+    -   `Chart.js` : Pour la visualisation dynamique et esthétique des données des capteurs.
+    -   `Font Awesome` : Pour des icônes claires et intuitives.
 
-```bash
-# Sous Windows (ex : WAMP)
-cd C:/wamp64/www
+---
 
-# Sous macOS (ex : MAMP)
-cd /Applications/MAMP/htdocs
+## 🌍 L'Éco-Conception au Cœur du Projet
 
-# Cloner le projet
-git clone <URL_DU_DEPOT_GIT> APPCOMMUN
-cd APPCOMMUN
-````
+Un effort particulier a été porté sur la réduction de l'empreinte environnementale de l'application, en suivant les bonnes pratiques.
 
-### Étape 2 : Installer les Dépendances
+1.  **Optimisation Radicale des Données "Live"** :
+    -   **Le problème :** Un système de mise à jour en temps réel peut être très gourmand en transférant de grandes quantités de données à chaque seconde.
+    -   **Notre solution :** L'historique complet (50 points) n'est chargé **qu'une seule fois** au chargement de la page. Ensuite, l'API `api_get_latest.php` ne transfère que la **toute dernière mesure** (quelques centaines d'octets) toutes les 5 secondes.
+    -   **Résultat :** Nous avons **réduit le poids des données de mise à jour de plus de 95%**, minimisant ainsi la consommation réseau et la charge serveur.
 
-```bash
+2.  **Arrêt des Requêtes Inutiles** :
+    -   Grâce à l'API de visibilité de page JavaScript, les appels "live" à l'API sont **automatiquement suspendus** lorsque l'utilisateur n'est pas sur l'onglet de l'application. Les ressources ne sont consommées que lorsque c'est réellement utile.
+
+3.  **Compression des Ressources** :
+    -   Les images du site (`logo.jpg`, `photo.jpg`) ont été compressées pour réduire leur poids sans perte de qualité visible, accélérant le temps de chargement initial.
+
+4.  **Optimisation des Requêtes SQL** :
+    -   Toutes les requêtes de récupération de données historiques utilisent une clause `LIMIT` pour ne jamais charger plus de données que nécessaire, préservant ainsi les ressources de la base de données.
+
+---
+
+## ⚙️ Installation (Guide Complet)
+
+### Prérequis
+-   Un serveur local (MAMP, WAMP, XAMPP) avec PHP ≥ 7.4
+-   Un serveur de base de données MySQL
+-   [Composer](https://getcomposer.org/) pour la gestion des dépendances
+
+### Étape 1 : Récupérer le code
+
+Clonez ce dépôt dans le dossier `htdocs` (ou `www`) de votre serveur local.
+
+git clone <URL_DU_DEPOT_GIT> APPFINALE
+cd APPFINALE/APPCOMMUN
+
+### Étape 2 : Installer les dépendances
+
+Exécutez cette commande à la racine du dossier APPCOMMUN.
+
 composer install
-```
+IGNORE_WHEN_COPYING_START
 
-Cela installera PHPMailer et les dépendances dans `vendor/`.
 
----
+### Étape 3 : Configurer la base de données locale
 
-### Étape 3 : Configurer la Base de Données Locale (APPFINALE)
+Via phpMyAdmin, créez une base de données nommée APPFINALE.
 
-#### 1. Démarrer votre serveur local
+Importez le fichier APPFINALE.sql fourni pour créer les tables utilisateurs, dispositifs, et etats_actionneurs.
 
-* Lancer **MAMP** (macOS) ou **WAMP** (Windows)
-* S’assurer qu’Apache et MySQL sont actifs
+Très important : Exécutez la requête suivante pour ajouter les colonnes nécessaires à la gestion des seuils et des unités :
 
-#### 2. Créer la base de données via phpMyAdmin
+ALTER TABLE `dispositifs`
+  ADD `seuil` FLOAT NULL DEFAULT NULL AFTER `nom_table_bdd`,
+  ADD `unite` VARCHAR(20) NULL DEFAULT NULL AFTER `seuil`,
+  ADD `type_alerte` VARCHAR(20) NOT NULL DEFAULT 'superieur' AFTER `unite`;
 
-* URL : [http://localhost/phpmyadmin](http://localhost/phpmyadmin) (ou [http://localhost:8888/phpmyadmin](http://localhost:8888/phpmyadmin) sur mac)
-* Créer une base nommée `APPFINALE` avec l’interclassement `utf8mb4_general_ci`
 
-#### 3. Importer le fichier `APPFINALE.sql`
+### Étape 4 : Configurer le fichier config.php
 
-* Aller dans l’onglet **"SQL"**
-* Copier tout le script fourni (ou le fichier `.sql`)
-* **⚠️ Assurez-vous que la table `utilisateurs` est incluse**
 
-#### 4. Ajouter les tables et données supplémentaires :
+Ouvrez le fichier config.php et remplissez les constantes avec vos propres informations :
 
-```sql
--- Table des dispositifs
-CREATE TABLE `dispositifs` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nom` varchar(100) NOT NULL,
-  `type` enum('capteur','actionneur') NOT NULL,
-  `nom_table_bdd` varchar(100) NOT NULL,
-  `unite` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+Base de données locale (DB_..._LOCAL) : Les identifiants de votre serveur MAMP/WAMP.
 
--- Données par défaut
-INSERT INTO `dispositifs` (`id`, `nom`, `type`, `nom_table_bdd`, `unite`) VALUES
-(1, 'Son ambiant', 'capteur', 'CapteurSon', 'dB'),
-(2, 'Lumière', 'capteur', 'CapteurLumiere', 'lux'),
-(3, 'Proximité', 'capteur', 'CapteurProximite', 'cm'),
-(4, 'Gaz', 'capteur', 'CapteurGaz', 'ppm'),
-(5, 'Lumière Principale', 'actionneur', 'Lampe1', 'On/Off'),
-(6, 'Température & Humidité', 'capteur', 'CapteurTempHum', '°C/%');
+Base de données commune (DB_..._COMMUN) : Les identifiants de la base de données distante qui reçoit les données des capteurs.
 
--- Table des états d'actionneurs
-CREATE TABLE `etats_actionneurs` (
-  `id_dispositif` int(11) NOT NULL,
-  `etat` tinyint(1) NOT NULL DEFAULT 0,
-  `derniere_modif` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id_dispositif`)
-) ENGINE=InnoDB;
+Paramètres SMTP (SMTP_...) : Crucial pour les e-mails. Utilisez une adresse Gmail avec un mot de passe d'application (et non votre mot de passe habituel).
 
--- Ajout du rôle utilisateur
-ALTER TABLE `utilisateurs` ADD `role` VARCHAR(50) NOT NULL DEFAULT 'utilisateur' AFTER `password`;
+Clé secrète (SECRET_KEY) : Changez cette chaîne pour une phrase longue et aléatoire pour sécuriser les jetons de réinitialisation.
 
--- Donner un rôle admin à un utilisateur
-UPDATE `utilisateurs` SET `role` = 'admin' WHERE `email` = 'alex29.sassi@gmail.com';
-```
 
----
+### Étape 5 : Lancer l'application !
 
-### Étape 4 : Configurer le Fichier `config.php`
+Démarrez votre serveur local et accédez à l'URL correspondante (ex: http://localhost/APPFINALE/APPCOMMUN/).
 
-Ouvrir le fichier à la racine du projet :
 
-```php
-<?php
-define('DB_HOST_LOCAL', 'localhost');
-define('DB_NAME_LOCAL', 'APPFINALE');
-define('DB_USER_LOCAL', 'root');
-define('DB_PASS_LOCAL', 'root'); // MAMP = 'root', WAMP = ''
+👤 Utilisation et Comptes
 
-define('DB_HOST_COMMUN', 'mysql-gusto.alwaysdata.net');
-define('DB_NAME_COMMUN', 'gusto_g5');
-define('DB_USER_COMMUN', 'gusto');
-define('DB_PASS_COMMUN', 'RestoGustoG5');
 
-// Configuration SMTP (email)
-define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_USER', 'votre.adresse.email@gmail.com');  // Remplacez ceci
-define('SMTP_PASS', 'abcdefghijklmnop');               // Mot de passe d’application Gmail (16 caractères)
-```
+Compte Administrateur : Utilisez les identifiants présents dans APPFINALE.sql (par défaut admin@gusto.com / password) ou créez le vôtre et changez son rôle en 'admin' dans la base de données.
 
----
+Compte Utilisateur : Créez un compte via la page d'inscription.
 
-## 🌐 Utilisation
 
-* Démarrer Apache/MySQL via MAMP ou WAMP
-* Ouvrir votre navigateur :
+🔌 Architecture des APIs
 
-  * Windows : [http://localhost/APPCOMMUN/](http://localhost/APPCOMMUN/)
-  * macOS : [http://localhost:8888/APPCOMMUN/](http://localhost:8888/APPCOMMUN/)
 
----
+Le projet expose plusieurs APIs pour interagir avec le système :
 
-## 👥 Comptes Utilisateurs
+api_capteur.php (GET) : Endpoint pour que les capteurs physiques envoient leurs données. Il gère l'enregistrement et le déclenchement des alertes.
 
-### Compte administrateur :
+Exemple : .../api_capteur.php?type=son&valeur=85
 
-* Email : `alex29.sassi@gmail.com`
-* Mot de passe : *(celui défini dans la base)*
+api_get_latest.php (GET) : Utilisé par le frontend pour la mise à jour en direct. API éco-conçue qui ne renvoie que la dernière valeur des capteurs actifs.
 
-### Compte utilisateur :
+api_actionneur.php (POST) : Endpoint sécurisé (session) pour changer l'état d'un actionneur.
 
-* À créer via la page d’inscription
-* Rôle par défaut : `utilisateur`
 
----
+💡 Prochaines Améliorations
 
-## 🔔 Tester les Alertes par Email
 
-Assurez-vous que `config.php` contient des identifiants SMTP valides. Ensuite, testez dans le navigateur :
+Ce projet a des bases solides et peut encore être étendu :
 
-```bash
-# Alerte gaz
-http://localhost/APPCOMMUN/api_capteur.php?type=gaz&valeur=1500
+Gestion des Utilisateurs : Une interface pour que l'admin puisse lister, modifier les rôles ou supprimer des utilisateurs.
 
-# Alerte température
-http://localhost/APPCOMMUN/api_capteur.php?type=temperature&valeur=35&humidite=60
-```
+Historique Détaillé : Une page dédiée pour chaque capteur, permettant de visualiser l'historique sur des périodes plus longues (semaine, mois) avec des options de filtrage.
 
-> Vérifiez votre boîte email pour voir si les alertes sont reçues.
+Notifications Web Push : En plus des e-mails, envoyer des notifications directement dans le navigateur pour des alertes en temps réel.
 
----
-
-## 📁 Structure du Projet
-
-* `index.php` – Point d’entrée unique
-* `controleurs/` – Logique applicative
-* `modele/` – Accès base de données
-* `vues/` – HTML / PHP pour affichage
-* `api_*.php` – Endpoints pour capteurs/actionneurs
-* `config.php` – Paramètres globaux
-* `vendor/` – Librairies Composer (PHPMailer)
-
----
-
-## 🔌 Détails des APIs
-
-### `api_capteur.php`
-
-* **Méthode :** `GET`
-* **Paramètres :** `type`, `valeur`, `humidite` (optionnel)
-* **Exemple :** `/api_capteur.php?type=son&valeur=75`
-
-### `api_actionneur.php`
-
-* **Méthode :** `POST`
-* **Paramètres :** `id`, `etat` (1 = ON, 0 = OFF)
-
-### `api_get_latest.php`
-
-* **Méthode :** `GET`
-* **Retour :** JSON contenant les dernières données
-
----
-
-## 🛠️ Dépannage
-
-### Erreur 500 ou page blanche
-
-* Activer les erreurs en haut du fichier concerné :
-
-```php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-```
-
-* Consulter les logs de MAMP/WAMP (`php_error.log`)
-
-### Emails non envoyés
-
-* Vérifiez `SMTP_USER` et `SMTP_PASS` dans `config.php`
-* Utilisez bien un **mot de passe d’application Gmail**
-* Activez le mode debug de PHPMailer dans `controleurs/fonctions.php` :
-
-```php
-$mail->SMTPDebug = 2;
-```
-
----
-
-## 🧪 Testé sur
-
-| OS      | Serveur local | Fonctionne |
-| ------- | ------------- | ---------- |
-| Windows | WAMP          | ✅          |
-| macOS   | MAMP          | ✅          |
-
----
-
-## 📬 Questions / Feedback
-
-Pour toute remarque ou bug, contactez l’auteur du projet ou ouvrez une issue dans le dépôt Git.
-
----
-
-```

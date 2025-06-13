@@ -20,12 +20,14 @@
             <form action="index.php?cible=utilisateurs&fonction=forgot_password" method="post" class="signup-form">
                 <div class="form-group">
                     <label for="email">Adresse e-mail</label>
-                    <div class="input-with-icon">
+                   <!-- LIGNE CORRIGÉE -->
+<div class="input-wrapper">
                         <input type="email" id="email" name="email" required>
                         <i class="fas fa-envelope icon"></i>
                     </div>
                 </div>
-                <button type="submit" class="btn-submit">Envoyer le lien</button>
+                <!-- LIGNE CORRIGÉE -->
+<button type="submit" class="btn btn-submit">Envoyer le lien</button>
             </form>
         </section>
     </main>
