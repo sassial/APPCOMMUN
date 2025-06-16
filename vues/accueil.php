@@ -88,7 +88,7 @@
                 <!-- Dernières alertes (seuil > 80 dB) -->
                 <div class="card alerts-card">
                     <h3>Dernières Alertes (seuil > 80 dB)</h3>
-                    <ul class="alerts-list">
+                    <ul class="card alerts-card">
                         <?php if (!empty($donneesSonDetaillees['alerts'])): ?>
                             <?php foreach ($donneesSonDetaillees['alerts'] as $alerte): ?>
                                 <li>

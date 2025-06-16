@@ -12,7 +12,6 @@
 </head>
 <body>
     <?php include __DIR__ . '/header.php'; ?>
-<div class="back">
     <main class="container-full">
         <h1>Tableau de Bord des Capteurs</h1>
         <div class="dashboard-grid">
@@ -54,7 +53,7 @@
             <?php endforeach; ?>
         </div>
     </main>
-</div>
+
     <?php include __DIR__ . '/footer.php'; ?>
 
     <script>

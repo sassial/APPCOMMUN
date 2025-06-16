@@ -8,7 +8,6 @@
 </head>
 <body>
     <?php include __DIR__ . '/header.php'; ?>
-    <div class="back">
     <main class="container-full">
         <h1>Gestion des Dispositifs</h1>
 
@@ -67,7 +66,6 @@
 </ul>
         </div>
     </main>
-    </div>
     <?php include __DIR__ . '/footer.php'; ?>
 </body>
 </html>

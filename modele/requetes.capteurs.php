@@ -19,8 +19,8 @@ function get_table_schema(string $nomTable): ?array {
             'temps'  => 'Times'  // Attention à la majuscule
         ],
         'CapteurGaz' => [
-            'valeur' => 'valeur',
-            'temps'  => 'temps'
+            'valeur' => 'value',
+            'temps'  => 'timestamp'
         ],
         // Le nom de la table est en minuscules dans la BDD
         'capteur_temp_hum' => [
