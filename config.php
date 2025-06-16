@@ -16,7 +16,7 @@ define('DB_PASS_COMMUN', 'RestoGustoG5');
 // --- Paramètres SMTP (Email) ---
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_USER', 'legrandjacques.ruben@gmail.com'); // **À CHANGER**
-define('SMTP_PASS', 'ebwc bgag reay cpti'); // **À CHANGER** pour votre mot de passe d'application
+define('SMTP_PASS', 'ojpn npau iina djyt'); // **À CHANGER** pour votre mot de passe d'application
 // ... (vos constantes de BDD et SMTP)
 // ... (vos constantes de BDD et SMTP)
 

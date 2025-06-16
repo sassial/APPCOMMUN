@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 13, 2025 at 11:11 AM
+-- Generation Time: Jun 16, 2025 at 08:13 AM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -32,20 +32,22 @@ CREATE TABLE `dispositifs` (
   `nom` varchar(100) NOT NULL,
   `type` enum('capteur','actionneur') NOT NULL,
   `nom_table_bdd` varchar(100) NOT NULL COMMENT 'Nom de la table dans la BDD distante (gusto_g5)',
-  `seuil` float DEFAULT NULL
+  `seuil` float DEFAULT NULL,
+  `unite` varchar(20) DEFAULT NULL,
+  `type_alerte` varchar(20) NOT NULL DEFAULT 'superieur'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `dispositifs`
 --
 
-INSERT INTO `dispositifs` (`id`, `nom`, `type`, `nom_table_bdd`, `seuil`) VALUES
-(1, 'Son ambiant', 'capteur', 'Capteur_Son', NULL),
-(2, 'Lumière', 'capteur', 'CapteurLumiere', NULL),
-(3, 'Proximité', 'capteur', 'CapteurProximite', NULL),
-(4, 'Gaz', 'capteur', 'CapteurGaz', NULL),
-(5, 'Température & Humidité', 'capteur', 'CapteurTempHum', NULL),
-(6, 'Lumière Principale', 'actionneur', 'Lampe1', NULL);
+INSERT INTO `dispositifs` (`id`, `nom`, `type`, `nom_table_bdd`, `seuil`, `unite`, `type_alerte`) VALUES
+(1, 'Son ambiant', 'capteur', 'Capteur_Son', NULL, NULL, 'superieur'),
+(2, 'Lumière', 'capteur', 'CapteurLumiere', NULL, NULL, 'superieur'),
+(3, 'Proximité', 'capteur', 'CapteurProximite', NULL, NULL, 'superieur'),
+(4, 'Gaz', 'capteur', 'CapteurGaz', NULL, NULL, 'superieur'),
+(5, 'Température & Humidité', 'capteur', 'capteur_temp_hum', NULL, NULL, 'superieur'),
+(6, 'Lumière Principale', 'actionneur', 'Lampe1', NULL, NULL, 'superieur');
 
 -- --------------------------------------------------------
 

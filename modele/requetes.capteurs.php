@@ -3,6 +3,7 @@
 
 /**
  * "Carte de traduction" pour les noms de colonnes et de tables incohérents.
+ * C'est ici que l'on adapte le code aux différentes structures de la BDD distante.
  */
 function get_table_schema(string $nomTable): ?array {
     $schemas = [
@@ -19,11 +20,10 @@ function get_table_schema(string $nomTable): ?array {
             'temps'  => 'Times'  // Attention à la majuscule
         ],
         'CapteurGaz' => [
-            'valeur' => 'valeur',
-            'temps'  => 'temps'
+            'valeur' => 'value',       // CORRIGÉ
+            'temps'  => 'timestamp'   // CORRIGÉ
         ],
-        // Le nom de la table est en minuscules dans la BDD
-        'capteur_temp_hum' => [
+        'capteur_temp_hum' => [ // Nom de table en minuscules
             'valeur' => 'temperature',
             'temps'  => 'horodatage'
         ]
@@ -48,7 +48,7 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
               FROM {$nomTableSecurise} 
               ORDER BY `{$colonneTemps}` DESC 
-              LIMIT 50";
+              LIMIT 200";
     
     try {
         $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
@@ -77,7 +77,7 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
  */
 function recupererDonneesTempHum(PDO $bdd): array {
     $nomTable = '`capteur_temp_hum`'; 
-    $query = "SELECT `temperature`, `humidite`, `horodatage` AS temps FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 50";
+    $query = "SELECT `temperature`, `humidite`, `horodatage` AS temps FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 200";
     
     try {
         $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
@@ -111,9 +111,8 @@ function recupererTemperatureExterne(): ?float {
     curl_setopt($ch, CURLOPT_HEADER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); // <-- AJOUTER CETTE LIGNE (10 secondes)
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
     
-    // ... le reste de la fonction ne change pas
     $response = curl_exec($ch);
 
     if (curl_errno($ch)) {
@@ -132,7 +131,9 @@ function recupererTemperatureExterne(): ?float {
     return null;
 }
 
-// Le reste du fichier (recupererDonneesDetaillees) reste inchangé...
+/**
+ * Récupère les données détaillées sur 24h pour la page d'accueil (VERSION ROBUSTE).
+ */
 function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
     $schema = get_table_schema($nomTable);
     if (!$schema) {
@@ -160,15 +161,25 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         return [ 'live' => null, 'stats24h' => null, 'alerts' => [], 'history' => [] ];
     }
 
+    // CORRECTION : Si la requête ne renvoie aucune ligne, on arrête ici pour éviter les erreurs.
     if (empty($data24h)) {
         return [ 'live' => null, 'stats24h' => null, 'alerts' => [], 'history' => [] ];
     }
     
+    // Le code ci-dessous ne sera exécuté que si $data24h contient des données.
     $valeurs24h = array_column($data24h, 'valeur');
+    
+    // On s'assure de ne pas diviser par zéro si $valeurs24h est vide pour une raison imprévue.
+    $count = count($valeurs24h);
+    if ($count === 0) {
+        return [ 'live' => $data24h[0], 'stats24h' => null, 'alerts' => [], 'history' => array_reverse($data24h) ];
+    }
+
+    // CORRECTION : Le calcul de la moyenne est maintenant correct.
     $stats24h = [
         'min' => round(min($valeurs24h), 1),
         'max' => round(max($valeurs24h), 1),
-        'avg' => round(array_sum($valeurs24h), 1)
+        'avg' => round(array_sum($valeurs24h) / $count, 1) 
     ];
 
     $alertes = [];
@@ -186,6 +197,7 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         'history'   => array_reverse($data24h)
     ];
 }
+
 /**
  * Récupère une citation aléatoire via une API externe.
  * @return array|null Un tableau avec 'texte' and 'auteur', ou null si échec.

@@ -23,6 +23,7 @@ function nettoyerDonnees($data) {
 function envoyerAlerteEmail(string $sujet, string $message): bool {
     $mail = new PHPMailer(true);
     try {
+        
         $mail->isSMTP();
         $mail->Host       = SMTP_HOST;
         $mail->SMTPAuth   = true;

@@ -4,7 +4,7 @@
 // **TRÈS IMPORTANT** : Doit être la toute première instruction du script
 session_start(); 
 
-define('BASE_PATH', '/APPFINALE/APPCOMMUN');
+define('BASE_PATH', '/APPDEUX/APPCOMMUN');
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);

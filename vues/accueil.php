@@ -2,12 +2,15 @@
 // vues/accueil.php
 ?><!DOCTYPE html>
 <html lang="fr">
+<!-- DANS vues/accueil.php, dans <head> -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Accueil – Gusteau’s</title>
     <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
-    <!-- On inclut Chart.js et l'adaptateur de date -->
+    
+    <!-- VÉRIFIEZ QUE CES DEUX LIGNES SONT PRÉSENTES -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
@@ -120,89 +123,172 @@
     <!-- ============================================= -->
     <!--     SCRIPT JAVASCRIPT POUR LES GRAPHIQUES     -->
     <!-- ============================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Récupération des données PHP
-            const historyData = <?= json_encode($donneesSonDetaillees['history'] ?? []) ?>;
-            const liveValue = <?= json_encode($donneesSonDetaillees['live']['valeur'] ?? 0) ?>;
-            const rootStyles = getComputedStyle(document.documentElement);
-            const navyColor = rootStyles.getPropertyValue('--navy').trim();
+    <!-- DANS vues/accueil.php -->
 
-            // --- GRAPHIQUE PRINCIPAL (LIGNE) ---
-            const mainSoundCanvas = document.getElementById('mainSoundChart');
-            if (mainSoundCanvas && historyData.length > 0) {
-                new Chart(mainSoundCanvas, {
-                    type: 'line',
-                    data: {
-                        labels: historyData.map(d => new Date(d.temps)),
-                        datasets: [{
-                            label: 'Niveau Sonore (dB)',
-                            data: historyData.map(d => d.valeur),
-                            borderColor: navyColor,
-                            backgroundColor: navyColor + '20', // Ajoute de la transparence
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: { unit: 'hour', tooltipFormat: 'HH:mm' },
-                                grid: { display: false },
-                                ticks: { color: '#888' }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: '#eef2f7' },
-                                ticks: { color: '#888' }
-                            }
-                        }
-                    }
-                });
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- SETUP INITIAL (EXISTING CODE) ---
+    const historyData = <?= json_encode($donneesSonDetaillees['history'] ?? []) ?>;
+    const initialLiveValue = <?= json_encode($donneesSonDetaillees['live']['valeur'] ?? 0) ?>;
+    const rootStyles = getComputedStyle(document.documentElement);
+    const navyColor = rootStyles.getPropertyValue('--navy').trim();
+
+    let mainChartInstance;
+    let gaugeChartInstance;
+
+    // --- GRAPHIQUE PRINCIPAL (LIGNE) ---
+    const mainSoundCanvas = document.getElementById('mainSoundChart');
+    if (mainSoundCanvas && historyData.length > 0) {
+        mainChartInstance = new Chart(mainSoundCanvas, {
+            type: 'line',
+            data: {
+                labels: historyData.map(d => new Date(d.temps)),
+                datasets: [{
+                    label: 'Niveau Sonore (dB)',
+                    data: historyData.map(d => d.valeur),
+                    borderColor: navyColor,
+                    backgroundColor: navyColor + '20',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            // ... inside new Chart(mainSoundCanvas, { ...
+options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+        x: {
+            type: 'time',
+            time: { unit: 'hour', tooltipFormat: 'HH:mm' },
+            grid: { display: false },
+            ticks: { color: '#888' }
+        },
+        y: {
+            beginAtZero: true,
+            grid: { color: '#eef2f7' },
+            ticks: { color: '#888' }
+        }
+    }
+}
+// ...
+        });
+    }
+
+    // --- JAUGE SEMI-CIRCULAIRE (DOUGHNUT) ---
+    const liveGaugeCanvas = document.getElementById('liveGaugeChart');
+    if (liveGaugeCanvas) {
+        const maxGaugeValue = 120;
+        gaugeChartInstance = new Chart(liveGaugeCanvas, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [initialLiveValue, maxGaugeValue - initialLiveValue],
+                    backgroundColor: [navyColor, '#eef2f7'],
+                    borderColor: [navyColor, '#eef2f7'],
+                    borderWidth: 1,
+                    circumference: 180,
+                    rotation: 270
+                }]
+            },
+            options: { /* ... options inchangées ... */ }
+        });
+    }
+
+    // ================================================================
+    //     NOUVELLE SECTION : MISE À JOUR LIVE POUR LA PAGE D'ACCUEIL
+    // ================================================================
+    let liveUpdateInterval;
+
+    const updateHomePageData = async () => {
+        try {
+            const response = await fetch('api_get_latest.php');
+            if (!response.ok) return;
+            const latestData = await response.json();
+
+            // On cherche spécifiquement les données du capteur sonore
+            const soundData = latestData['Capteur_Son'];
+            if (!soundData || !soundData.valeur) return;
+
+            const newLiveValue = parseFloat(soundData.valeur);
+
+            // 1. Mettre à jour la valeur numérique
+            document.querySelector('.live-value').textContent = newLiveValue.toFixed(1);
+
+            // 2. Mettre à jour la jauge
+            if (gaugeChartInstance) {
+                const maxGaugeValue = 120;
+                gaugeChartInstance.data.datasets[0].data[0] = newLiveValue;
+                gaugeChartInstance.data.datasets[0].data[1] = maxGaugeValue - newLiveValue;
+                gaugeChartInstance.update('none');
             }
 
-            // --- JAUGE SEMI-CIRCULAIRE (DOUGHNUT) ---
-            const liveGaugeCanvas = document.getElementById('liveGaugeChart');
-            if (liveGaugeCanvas) {
-                const maxGaugeValue = 120; // Valeur max de la jauge (ex: 120 dB)
-                new Chart(liveGaugeCanvas, {
-                    type: 'doughnut',
-                    data: {
-                        datasets: [{
-                            data: [liveValue, maxGaugeValue - liveValue],
-                            backgroundColor: [navyColor, '#eef2f7'],
-                            borderColor: [navyColor, '#eef2f7'],
-                            borderWidth: 1,
-                            circumference: 180, // Demi-cercle
-                            rotation: 270       // Commence en bas
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        cutout: '80%', // Épaisseur de l'anneau
-                        plugins: { tooltip: { enabled: false } }
-                    }
-                });
-            }
-        });
-    </script>
-    
-    <!-- Script pour le header qui change de couleur au scroll -->
-    <script>
-        const header = document.querySelector('.site-header');
-        window.addEventListener('scroll', () => {
-          if (window.scrollY > 10) {
-            header.classList.add('scrolled');
-          } else {
-            header.classList.remove('scrolled');
-          }
-        });
-    </script>
+            // 3. Mettre à jour le graphique principal (optionnel mais recommandé)
+            // VERSION CORRIGÉE de la fonction updateHomePageData
+
+const updateHomePageData = async () => {
+    try {
+        const response = await fetch('api_get_latest.php');
+        if (!response.ok) return;
+        const latestData = await response.json();
+
+        const soundData = latestData['Capteur_Son'];
+        if (!soundData || !soundData.valeur) return;
+
+        const newLiveValue = parseFloat(soundData.valeur);
+
+        // 1. Mettre à jour la valeur numérique (ON GARDE)
+        document.querySelector('.live-value').textContent = newLiveValue.toFixed(1);
+
+        // 2. Mettre à jour la jauge (ON GARDE)
+        if (gaugeChartInstance) {
+            const maxGaugeValue = 120;
+            gaugeChartInstance.data.datasets[0].data[0] = newLiveValue;
+            gaugeChartInstance.data.datasets[0].data[1] = maxGaugeValue - newLiveValue;
+            gaugeChartInstance.update('none');
+        }
+
+        // Le bloc pour mettre à jour le graphique principal a été supprimé d'ici.
+
+    } catch (error) {
+        console.error("Erreur de mise à jour (accueil):", error);
+    }
+};
+
+        } catch (error) {
+            console.error("Erreur de mise à jour (accueil):", error);
+        }
+    };
+
+    function startHomeUpdates() {
+        if (liveUpdateInterval) clearInterval(liveUpdateInterval);
+        liveUpdateInterval = setInterval(updateHomePageData, 5000);
+        console.log("Mises à jour (accueil) démarrées.");
+    }
+
+    function stopHomeUpdates() {
+        clearInterval(liveUpdateInterval);
+        console.log("Mises à jour (accueil) arrêtées.");
+    }
+
+    document.addEventListener("visibilitychange", () => {
+        document.hidden ? stopHomeUpdates() : startHomeUpdates();
+    });
+
+    startHomeUpdates();
+
+});
+
+// Script pour le header (inchangé)
+const header = document.querySelector('.site-header');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 10) {
+    header.classList.add('scrolled');
+  } else {
+    header.classList.remove('scrolled');
+  }
+});
+</script>
 </body>
 </html>
