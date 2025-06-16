@@ -5,7 +5,7 @@
 define('DB_HOST_LOCAL', 'localhost');
 define('DB_NAME_LOCAL', 'APPFINALE');
 define('DB_USER_LOCAL', 'root');
-define('DB_PASS_LOCAL', 'root');
+define('DB_PASS_LOCAL', '');
 
 // --- Base de données COMMUNE (alwaysdata) ---
 define('DB_HOST_COMMUN', 'mysql-gusto.alwaysdata.net');
