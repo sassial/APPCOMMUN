@@ -48,7 +48,7 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
               FROM {$nomTableSecurise} 
               ORDER BY `{$colonneTemps}` DESC 
-              LIMIT 200";
+              LIMIT 50";
     
     try {
         $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
@@ -77,7 +77,7 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
  */
 function recupererDonneesTempHum(PDO $bdd): array {
     $nomTable = '`capteur_temp_hum`'; 
-    $query = "SELECT `temperature`, `humidite`, `horodatage` AS temps FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 200";
+    $query = "SELECT `temperature`, `humidite`, `horodatage` AS temps FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 50";
     
     try {
         $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);

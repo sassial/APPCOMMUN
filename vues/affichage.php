@@ -61,6 +61,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ------------------- SETUP INITIAL -------------------
     const charts = {};
+    // <<< CLARIFICATION : Constante renommée pour plus de clarté.
+    // Vous pouvez changer cette valeur pour ajuster le nombre de points sur les graphiques.
+    const MAX_DATA_POINTS = 50; 
+    
     const rootStyles = getComputedStyle(document.documentElement);
     const navyColor = rootStyles.getPropertyValue('--navy').trim();
     const seuils = <?= json_encode($seuils_graphiques ?? []) ?>;
@@ -108,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const ctx = document.getElementById(`chart-${capteur.id}`).getContext('2d');
             
+                       // Ce bloc remplace l'ancien "charts[capteur.id] = { ... };"
             charts[capteur.id] = {
                 instance: new Chart(ctx, {
                     type: 'line',
@@ -123,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             pointRadius: 0
                         }]
                     },
+                    // L'OBJET 'OPTIONS' COMPLET QUI MANQUAIT EST CI-DESSOUS
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
@@ -170,47 +176,62 @@ document.addEventListener('DOMContentLoaded', () => {
             contentContainer.innerHTML = `<div class="no-data-message"><i class="fas fa-satellite-dish"></i><p>En attente de données...</p></div>`;
         }
     });
+// DANS vues/affichage.php
 
-    const mettreAJourDonnees = async () => {
-        try {
-            const response = await fetch('api_get_latest.php');
-            if (!response.ok) return;
-            const latestData = await response.json();
+const mettreAJourDonnees = async () => {
+    try {
+        const response = await fetch('api_get_latest.php');
+        if (!response.ok) return;
+        const latestData = await response.json();
 
-            for (const id_capteur in charts) {
-                const chartInfo = charts[id_capteur];
-                const nom_table = chartInfo.nom_table;
-                const data = latestData[nom_table];
+        for (const id_capteur in charts) {
+            const chartInfo = charts[id_capteur];
+            const nom_table = chartInfo.nom_table;
+            const data = latestData[nom_table];
 
-                if (!data) continue;
+            // Si aucune donnée n'est renvoyée pour ce capteur, on passe au suivant.
+            if (!data || !data.latest) continue;
 
-                const isTempHum = (nom_table === 'capteur_temp_hum');
-                const nouvelleValeur = isTempHum ? data.temperature : data.valeur;
-                
-                if (isTempHum) {
-                    document.getElementById(`val-${id_capteur}-temp`).textContent = nouvelleValeur.toFixed(1);
-                    document.getElementById(`val-${id_capteur}-hum`).textContent = data.humidite.toFixed(1);
-                } else {
-                    document.getElementById(`val-${id_capteur}-latest`).textContent = nouvelleValeur.toFixed(1);
+            const isTempHum = (nom_table === 'capteur_temp_hum');
+            
+            // --- CORRECTION PRINCIPALE ICI ---
+            // On va chercher la valeur dans l'objet "latest"
+            const nouvelleValeur = isTempHum ? data.latest.temperature : data.latest.valeur;
+
+            // On vérifie que la valeur existe avant de l'utiliser
+            if (nouvelleValeur === undefined) continue;
+            
+            // Mise à jour des valeurs numériques
+            if (isTempHum) {
+                document.getElementById(`val-${id_capteur}-temp`).textContent = nouvelleValeur.toFixed(1);
+                // On met aussi à jour l'humidité
+                if (data.latest.humidite !== undefined) {
+                    document.getElementById(`val-${id_capteur}-hum`).textContent = data.latest.humidite.toFixed(1);
                 }
-
-                const chartInstance = chartInfo.instance;
-                const dataset = chartInstance.data.datasets[0].data;
-                const labels = chartInstance.data.labels;
-                
-                dataset.push(nouvelleValeur);
-                labels.push(new Date());
-
-                if (dataset.length > 50) {
-                    dataset.shift();
-                    labels.shift();
-                }
-                chartInstance.update('none'); 
+            } else {
+                document.getElementById(`val-${id_capteur}-latest`).textContent = nouvelleValeur.toFixed(1);
             }
-        } catch (error) {
-            console.error("Erreur lors de la mise à jour live:", error);
+
+            // Mise à jour du graphique
+            const chartInstance = chartInfo.instance;
+            const dataset = chartInstance.data.datasets[0].data;
+            const labels = chartInstance.data.labels;
+            
+            dataset.push(nouvelleValeur);
+            labels.push(new Date()); // On ajoute la date actuelle comme étiquette
+
+            if (dataset.length > MAX_DATA_POINTS) {
+                dataset.shift();
+                labels.shift();
+            }
+            chartInstance.update('none'); 
         }
-    };
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour live:", error);
+    }
+};
+
+
 
     function startUpdates() {
         if (liveUpdateInterval) clearInterval(liveUpdateInterval);
