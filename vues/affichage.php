@@ -31,7 +31,7 @@
             <!-- Boucle dynamique pour les CAPTEURS ACTIFS -->
             <?php foreach ($dispositifs_capteurs as &$capteur):
                 $data = $donnees_capteurs[$capteur['id']] ?? null;
-                if (!$data) continue; // Ne pas afficher la carte si pas de données
+                if (!$data) continue;
             ?>
                 <div class="dashboard-card card">
                     <div class="card-header">
@@ -80,10 +80,5 @@
 
     <?php include __DIR__ . '/footer.php'; ?>
 
-    <script>
-        // Le JavaScript complet pour les graphiques et les actionneurs va ici
-        // (Il est identique à la version que je vous ai fournie précédemment,
-        // vous pouvez la copier-coller ici si elle n'y est plus).
-    </script>
 </body>
 </html>
