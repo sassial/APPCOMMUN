@@ -1,15 +1,37 @@
 <?php
-// vues/accueil.php
-?><!DOCTYPE html>
+$greenframePath = __DIR__ . '/donnees-greenframe.json';
+$greenframeData = file_exists($greenframePath) ? json_decode(file_get_contents($greenframePath), true) : null;
+
+// Statut éco-responsable
+function getEcoStatus($value, $type) {
+    if ($type === 'energy') {
+        if ($value <= 100) return ['label' => 'Excellent', 'emoji' => '✅'];
+        if ($value <= 300) return ['label' => 'Correct', 'emoji' => '🟡'];
+        return ['label' => 'À améliorer', 'emoji' => '🔴'];
+    }
+    if ($type === 'carbon') {
+        if ($value <= 50) return ['label' => 'Très faible', 'emoji' => '✅'];
+        if ($value <= 150) return ['label' => 'Moyen', 'emoji' => '🟡'];
+        return ['label' => 'Élevé', 'emoji' => '🔴'];
+    }
+    return ['label' => '--', 'emoji' => ''];
+}
+
+$ecoEnergy = getEcoStatus($greenframeData['energy'] ?? 0, 'energy');
+$ecoCarbon = getEcoStatus($greenframeData['carbon'] ?? 0, 'carbon');
+
+?>
+
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Accueil – Gusteau’s</title>
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/vues/style.css">
+    <link rel="stylesheet" href="/APPCOMMUN/vues/style.css">
     <!-- On inclut Chart.js et l'adaptateur de date -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js" defer></script>
 </head>
 <body>
 
@@ -28,9 +50,35 @@
             <a href="#dashboard" class="btn btn-hero">Voir mon tableau de bord</a>
         </div>
         <div class="hero-image">
-            <img src="<?= BASE_PATH ?>/photo.jpg" alt="Intérieur du restaurant Gusteau’s">
+            <img src="/APPCOMMUN/photo.jpg" alt="Intérieur du restaurant Gusteau’s">
         </div>
     </section>
+    <div class="greenframe-stats card">
+        <h3>🌿 Empreinte écologique du site</h3>
+        <ul style="list-style: none; padding: 0;">
+            <li>
+                💡 <strong>Énergie</strong> :
+                <?= htmlspecialchars($greenframeData['energy'] ?? '--') ?> mWh
+                <span style="margin-left: 0.5rem; font-style: italic; color: #4caf50;">
+                <?= $ecoEnergy['emoji'] ?> <?= $ecoEnergy['label'] ?>
+            </span>
+            </li>
+            <li>
+                🌍 <strong>CO₂</strong> :
+                <?= htmlspecialchars($greenframeData['carbon'] ?? '--') ?> mg eq. CO₂
+                <span style="margin-left: 0.5rem; font-style: italic; color: #4caf50;">
+                <?= $ecoCarbon['emoji'] ?> <?= $ecoCarbon['label'] ?>
+            </span>
+            </li>
+            <li>
+                📊 <strong>Incertitude</strong> :
+                ± <?= htmlspecialchars($greenframeData['uncertainty'] ?? '0') ?> %
+            </li>
+        </ul>
+    </div>
+
+
+
 
     <!-- Section du Dashboard Personnel -->
     <section id="dashboard" class="personal-dashboard">
@@ -88,7 +136,7 @@
                 <!-- Dernières alertes (seuil > 80 dB) -->
                 <div class="card alerts-card">
                     <h3>Dernières Alertes (seuil > 80 dB)</h3>
-                    <ul class="alerts-list">
+                    <ul class="card alerts-card">
                         <?php if (!empty($donneesSonDetaillees['alerts'])): ?>
                             <?php foreach ($donneesSonDetaillees['alerts'] as $alerte): ?>
                                 <li>
