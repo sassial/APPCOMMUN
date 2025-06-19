@@ -1,15 +1,12 @@
 <?php
 // Fichier : controleurs/utilisateurs.php (VERSION FINALE ET CORRIGÉE)
 
-require_once(__DIR__ . '/../modele/connexion.php');
-require_once(__DIR__ . '/../modele/connexion_commune.php'); 
 require_once(__DIR__ . '/../modele/requetes.utilisateurs.php');
 require_once(__DIR__ . '/../modele/requetes.capteurs.php');
 
 $function = $_GET['fonction'] ?? 'login';
 
-// Si un utilisateur est déjà connecté, on le redirige vers l'accueil
-// au lieu de lui montrer les pages de connexion ou d'inscription.
+// Si un utilisateur est déjà connecté, on le redirige vers l'accueil au lieu de lui montrer les pages de connexion ou d'inscription.
 if (isset($_SESSION['utilisateur']) && ($function === 'login' || $function === 'inscription')) {
     header('Location: index.php?cible=utilisateurs&fonction=accueil');
     exit();
@@ -23,49 +20,44 @@ switch ($function) {
             exit();
         }
         // Récupère les données pour le dashboard personnel sur la page d'accueil.
-        // Utilise le nom de table correct avec un underscore.
-        $donneesSonDetaillees = recupererDonneesDetaillees($bdd_commune, 'Capteur_Son');
+        $donneesSonDetaillees = recupererDonneesDetaillees($bdd_commune, 'CapteurSon');
         $vue = "accueil";
         break;
 
-   // Dans controleurs/utilisateurs.php
-// Dans controleurs/utilisateurs.php
-// Dans controleurs/utilisateurs.php
-
-case 'login':
-    $vue = "login";
-    // On vérifie que les champs ne sont pas vides
-    if (!empty($_POST['email']) && !empty($_POST['password'])) {
-        
-        // On ne nettoie QUE l'email pour la recherche.
-        $email = nettoyerDonnees($_POST['email']);
-        
-        // On garde le mot de passe TEL QUEL, brut de formulaire.
-        $password_saisi = $_POST['password'];
-        
-        // On recherche l'utilisateur dans la base de données.
-        $utilisateur = rechercheParEmail($bdd, $email);
-
-        // La vérification la plus importante :
-        // 1. Est-ce que l'utilisateur a été trouvé ($utilisateur n'est pas false) ?
-        // 2. Est-ce que le mot de passe saisi, une fois haché, correspond au hash stocké ?
-        if ($utilisateur && password_verify($password_saisi, $utilisateur['password'])) {
+    case 'login':
+        $vue = "login";
+        // On vérifie que les champs ne sont pas vides
+        if (!empty($_POST['email']) && !empty($_POST['password'])) {
             
-            // Si les deux sont vrais, la connexion est un succès.
-            $_SESSION['utilisateur'] = [
-                'id' => $utilisateur['id'],
-                'prenom' => $utilisateur['prenom'],
-                'role' => $utilisateur['role']
-            ];
-            header('Location: index.php?cible=utilisateurs&fonction=accueil');
-            exit();
+            // On ne nettoie QUE l'email pour la recherche.
+            $email = nettoyerDonnees($_POST['email']);
+            
+            // On garde le mot de passe TEL QUEL, brut de formulaire.
+            $password_saisi = $_POST['password'];
+            
+            // On recherche l'utilisateur dans la base de données.
+            $utilisateur = rechercheParEmail($bdd, $email);
 
-        } else {
-            // Si l'une des deux conditions est fausse, c'est un échec.
-            $alerte = "Adresse e-mail ou mot de passe incorrect.";
+            // La vérification la plus importante :
+            // 1. Est-ce que l'utilisateur a été trouvé ($utilisateur n'est pas false) ?
+            // 2. Est-ce que le mot de passe saisi, une fois haché, correspond au hash stocké ?
+            if ($utilisateur && password_verify($password_saisi, $utilisateur['password'])) {
+                
+                // Si les deux sont vrais, la connexion est un succès.
+                $_SESSION['utilisateur'] = [
+                    'id' => $utilisateur['id'],
+                    'prenom' => $utilisateur['prenom'],
+                    'role' => $utilisateur['role']
+                ];
+                header('Location: index.php?cible=utilisateurs&fonction=accueil');
+                exit();
+
+            } else {
+                // Si l'une des deux conditions est fausse, c'est un échec.
+                $alerte = "Adresse e-mail ou mot de passe incorrect.";
+            }
         }
-    }
-    break;
+        break;
 
     
     case 'inscription':

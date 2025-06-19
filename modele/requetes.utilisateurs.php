@@ -1,62 +1,78 @@
 <?php
-// On utilise un chemin plus robuste pour l'inclusion
-require_once(__DIR__ . '/connexion.php');
 
 /**
  * Recherche un utilisateur par son email.
- * @param PDO $bdd L'objet de connexion à la BDD locale.
- * @param string $email L'email à rechercher.
- * @return array|null Les données de l'utilisateur ou null s'il n'est pas trouvé.
+ *
+ * @param PDO $bdd Instance PDO de la base de données.
+ * @param string $email Email à rechercher.
+ * @return array|null Données de l'utilisateur ou null si non trouvé.
  */
 function rechercheParEmail(PDO $bdd, string $email): ?array {
-    $statement = $bdd->prepare('SELECT * FROM utilisateurs WHERE email = :email');
-    $statement->bindParam(":email", $email, PDO::PARAM_STR);
-    $statement->execute();
-    $result = $statement->fetch(PDO::FETCH_ASSOC);
-    return $result ?: null;
+    try {
+        $statement = $bdd->prepare(
+            'SELECT id, prenom, nom, email, password FROM utilisateurs WHERE email = :email'
+        );
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    } catch (PDOException $e) {
+        error_log("Erreur rechercheParEmail : " . $e->getMessage());
+        return null;
+    }
 }
 
 /**
- * **NOUVELLE FONCTION ESSENTIELLE**
  * Vérifie si un email existe déjà dans la base de données.
- * @param PDO $bdd L'objet de connexion.
- * @param string $email L'email à vérifier.
- * @return bool True si l'email existe, false sinon.
+ *
+ * @param PDO $bdd Instance PDO de la base de données.
+ * @param string $email Email à vérifier.
+ * @return bool True si l'email existe, sinon false.
  */
 function emailExiste(PDO $bdd, string $email): bool {
-    $statement = $bdd->prepare('SELECT 1 FROM utilisateurs WHERE email = :email');
-    $statement->bindParam(':email', $email, PDO::PARAM_STR);
-    $statement->execute();
-    return $statement->fetchColumn() !== false;
+    try {
+        $statement = $bdd->prepare(
+            'SELECT 1 FROM utilisateurs WHERE email = :email'
+        );
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->execute();
+
+        return $statement->fetchColumn() !== false;
+    } catch (PDOException $e) {
+        error_log("Erreur emailExiste : " . $e->getMessage());
+        return false;
+    }
 }
 
 /**
  * Ajoute un nouvel utilisateur dans la base de données.
- * @param PDO $bdd L'objet de connexion.
- * @param array $utilisateur Les données de l'utilisateur.
- * @return bool True en cas de succès, false en cas d'échec.
+ *
+ * ATTENTION : le mot de passe doit être hashé avant appel.
+ *
+ * @param PDO $bdd Instance PDO de la base de données.
+ * @param array $utilisateur Données de l'utilisateur (prenom, nom, email, password).
+ * @return bool True en cas de succès, sinon false.
  */
 function ajouteUtilisateur(PDO $bdd, array $utilisateur): bool {
-    $query = 'INSERT INTO utilisateurs (prenom, nom, email, password) VALUES (:prenom, :nom, :email, :password)';
-    $donnees = $bdd->prepare($query);
-    $donnees->bindParam(":prenom", $utilisateur['prenom'], PDO::PARAM_STR);
-    $donnees->bindParam(":nom", $utilisateur['nom'], PDO::PARAM_STR);
-    $donnees->bindParam(":email", $utilisateur['email'], PDO::PARAM_STR);
-    $donnees->bindParam(":password", $utilisateur['password'], PDO::PARAM_STR);
-    return $donnees->execute();
-}
+    try {
+        if (!isset($utilisateur['prenom'], $utilisateur['nom'], $utilisateur['email'], $utilisateur['password'])) {
+            throw new InvalidArgumentException('Données utilisateur incomplètes.');
+        }
 
-/**
- * Met à jour le mot de passe d'un utilisateur identifié par son email.
- * @param PDO $bdd L'objet de connexion.
- * @param string $email L'email de l'utilisateur à mettre à jour.
- * @param string $password_hache Le nouveau mot de passe déjà haché.
- * @return bool True si la mise à jour a réussi, false sinon.
- */
-function mettreAJourMotDePasse(PDO $bdd, string $email, string $password_hache): bool {
-    $query = 'UPDATE utilisateurs SET password = :password WHERE email = :email';
-    $statement = $bdd->prepare($query);
-    $statement->bindParam(':password', $password_hache, PDO::PARAM_STR);
-    $statement->bindParam(':email', $email, PDO::PARAM_STR);
-    return $statement->execute();
+        $statement = $bdd->prepare(
+            'INSERT INTO utilisateurs (prenom, nom, email, password)
+             VALUES (:prenom, :nom, :email, :password)'
+        );
+
+        $statement->bindValue(':prenom', $utilisateur['prenom'], PDO::PARAM_STR);
+        $statement->bindValue(':nom', $utilisateur['nom'], PDO::PARAM_STR);
+        $statement->bindValue(':email', $utilisateur['email'], PDO::PARAM_STR);
+        $statement->bindValue(':password', $utilisateur['password'], PDO::PARAM_STR);
+
+        return $statement->execute();
+    } catch (Exception $e) {
+        error_log("Erreur ajouteUtilisateur : " . $e->getMessage());
+        return false;
+    }
 }
