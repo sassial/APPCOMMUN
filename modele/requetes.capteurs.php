@@ -66,8 +66,8 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
               FROM {$nomTableSecurise} 
               ORDER BY `{$colonneTemps}` DESC 
-              LIMIT 50";
-
+              LIMIT 200";
+    
     try {
         $stmt = $bdd->prepare($query);
         $stmt->execute();
@@ -96,9 +96,9 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
  * Récupère les données du capteur Temp/Hum (cas spécial).
  */
 function recupererDonneesTempHum(PDO $bdd): array {
-    $nomTable = '`capteur_temp_hum`'; // Assurez-vous que cette table existe sur la BDD distante
-    $query = "SELECT `temperature`, `humidite`, `horodatage` FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 50";
-
+    $nomTable = '`capteur_temp_hum`'; 
+    $query = "SELECT `temperature`, `humidite`, `horodatage` AS temps FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 200";
+    
     try {
         $stmt = $bdd->prepare($query);
         $stmt->execute();
