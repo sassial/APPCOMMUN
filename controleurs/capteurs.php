@@ -2,8 +2,6 @@
 // Fichier: controleurs/capteurs.php (Version finale et propre)
 
 // --- 1. Inclusions des modèles nécessaires ---
-require_once(__DIR__ . '/../modele/connexion.php');          // Pour la BDD locale (gestion)
-require_once(__DIR__ . '/../modele/connexion_commune.php');  // Pour la BDD distante (données capteurs)
 require_once(__DIR__ . '/../modele/requetes.capteurs.php');  // Fonctions pour lire les données des capteurs
 require_once(__DIR__ . '/../modele/requetes.gestion.php');   // Fonctions pour la page de gestion
 
@@ -34,13 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $function = $_GET['fonction'] ?? 'affichage';
 
 switch ($function) {
-    case 'gestion':
-        // Seul un admin peut voir la page de gestion.
-        if (!isset($_SESSION['utilisateur']['role']) || $_SESSION['utilisateur']['role'] !== 'admin') {
-            header('Location: index.php?cible=utilisateurs&fonction=accueil');
-            exit();
-        }
-        
+    case 'gestion':        
         // Préparation des données pour la vue de gestion
         $capteursActifs = listerDispositifsParEtat($bdd, 'capteur', true);
         $capteursInactifs = listerDispositifsParEtat($bdd, 'capteur', false);
@@ -59,9 +51,10 @@ switch ($function) {
         
         // b) On récupère les données pour chaque capteur actif
         $donnees_capteurs = [];
-        foreach ($dispositifs_capteurs as $capteur) {
+        foreach ($dispositifs_capteurs as &$capteur) {
+            $capteur['nom_table_bdd'] = getNomTable($capteur['nom']);
             $nom_table = $capteur['nom_table_bdd'];
-            if ($nom_table === 'CapteurTempHum') {
+            if ($nom_table === 'capteur_temp_hum') {
                 $donnees_capteurs[$capteur['id']] = recupererDonneesTempHum($bdd_commune);
             } else {
                 $donnees_capteurs[$capteur['id']] = recupererDonneesCapteur($bdd_commune, $nom_table);
@@ -82,5 +75,4 @@ switch ($function) {
         break;
 }
 
-// --- 5. Inclusion de la vue finale ---
 require_once(__DIR__ . '/../vues/' . $vue . '.php');

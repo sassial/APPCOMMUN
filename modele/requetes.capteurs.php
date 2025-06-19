@@ -6,7 +6,7 @@
  */
 function get_table_schema(string $nomTable): ?array {
     $schemas = [
-        'Capteur_Son' => [
+        'CapteurSon' => [
             'valeur' => 'valeur',
             'temps'  => 'temps'
         ],
@@ -19,36 +19,61 @@ function get_table_schema(string $nomTable): ?array {
             'temps'  => 'Times'
         ],
         'CapteurGaz' => [
-            'valeur' => 'valeur',
-            'temps'  => 'temps'
+            'valeur' => 'value',
+            'temps'  => 'timestamp'
+        ],
+        'capteur_temp_hum' => [
+            'temperature' => 'temperature',
+            'humidite'    => 'humidite',
+            'temps'       => 'horodatage'
         ]
     ];
     return $schemas[$nomTable] ?? null;
 }
 
 /**
+ * Valide le nom de table par rapport à une liste blanche.
+ */
+function is_valid_table(string $nomTable): bool {
+    $allowedTables = ['CapteurSon', 'CapteurLumiere', 'CapteurProximite', 'CapteurGaz', 'capteur_temp_hum'];
+    return in_array($nomTable, $allowedTables, true);
+}
+
+/**
  * Récupère les données d'une table de capteur, en s'adaptant à sa structure.
  */
 function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
+    if (!is_valid_table($nomTable)) {
+        trigger_error("Nom de table non autorisé : {$nomTable}");
+        return ['latest' => null, 'min' => null, 'max' => null, 'average' => null, 'history' => []];
+    }
+
     $schema = get_table_schema($nomTable);
     if (!$schema) {
-        error_log("Schéma inconnu pour la table : {$nomTable}");
+        trigger_error("Schéma inconnu pour la table : {$nomTable}");
         return ['latest' => null, 'min' => null, 'max' => null, 'average' => null, 'history' => []];
+    }
+
+    // Cas spécial pour capteur_temp_hum
+    if ($nomTable === 'capteur_temp_hum') {
+        return recupererDonneesTempHum($bdd);
     }
 
     $colonneValeur = $schema['valeur'];
     $colonneTemps = $schema['temps'];
     $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
-    
+
     $query = "SELECT `{$colonneValeur}` AS valeur, `{$colonneTemps}` AS temps 
               FROM {$nomTableSecurise} 
               ORDER BY `{$colonneTemps}` DESC 
               LIMIT 50";
-    
+
     try {
-        $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $bdd->prepare($query);
+        $stmt->execute();
+        $historique = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log("Erreur SQL pour {$nomTable}: " . $e->getMessage());
+        trigger_error("Erreur SQL pour {$nomTable}: " . $e->getMessage());
         return ['latest' => null, 'min' => null, 'max' => null, 'average' => null, 'history' => []];
     }
 
@@ -71,26 +96,35 @@ function recupererDonneesCapteur(PDO $bdd, string $nomTable): array {
  * Récupère les données du capteur Temp/Hum (cas spécial).
  */
 function recupererDonneesTempHum(PDO $bdd): array {
-    $nomTable = '`CapteurTempHum`'; // Assurez-vous que cette table existe sur la BDD distante
-    $query = "SELECT `temperature`, `humidite`, `temps` FROM {$nomTable} ORDER BY `temps` DESC LIMIT 50";
-    
+    $nomTable = '`capteur_temp_hum`'; // Assurez-vous que cette table existe sur la BDD distante
+    $query = "SELECT `temperature`, `humidite`, `horodatage` FROM {$nomTable} ORDER BY `horodatage` DESC LIMIT 50";
+
     try {
-        $historique = $bdd->query($query)->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $bdd->prepare($query);
+        $stmt->execute();
+        $historique = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log("Erreur SQL pour CapteurTempHum: " . $e->getMessage());
-        return ['latest' => null, 'min_temp' => null, 'max_temp' => null, 'history' => []];
+        trigger_error("Erreur SQL pour capteur_temp_hum: " . $e->getMessage());
+        return ['latest' => null, 'min_temp' => null, 'max_temp' => null, 'min_humidite' => null, 'max_humidite' => null, 'history' => []];
     }
 
     if (empty($historique)) {
-        return ['latest' => null, 'min_temp' => null, 'max_temp' => null, 'history' => []];
+        return ['latest' => null, 'min_temp' => null, 'max_temp' => null, 'min_humidite' => null, 'max_humidite' => null, 'history' => []];
     }
 
     $temperatures = array_column($historique, 'temperature');
+    $humidites = array_column($historique, 'humidite');
+
     return [
-        'latest'  => ['temperature' => round($historique[0]['temperature'], 1), 'humidite' => round($historique[0]['humidite'], 1)],
-        'min_temp' => round(min($temperatures), 1),
-        'max_temp' => round(max($temperatures), 1),
-        'history' => array_reverse($historique) 
+        'latest'      => [
+            'temperature' => round($historique[0]['temperature'], 1),
+            'humidite'    => round($historique[0]['humidite'], 1)
+        ],
+        'min_temp'    => round(min($temperatures), 1),
+        'max_temp'    => round(max($temperatures), 1),
+        'min_humidite'=> round(min($humidites), 1),
+        'max_humidite'=> round(max($humidites), 1),
+        'history'     => array_reverse($historique)
     ];
 }
 
@@ -98,9 +132,8 @@ function recupererDonneesTempHum(PDO $bdd): array {
  * Récupère la température externe via une API en utilisant cURL (plus robuste).
  */
 function recupererTemperatureExterne(): ?float {
-    // URL CORRIGÉE avec & et non ¤
-    $url = "https://api.open-meteo.com/v1/forecast?latitude=48.85&longitude=2.35¤t_weather=true";
-    
+    $url = "https://api.open-meteo.com/v1/forecast?latitude=48.85&longitude=2.35&current_weather=true";
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -110,14 +143,14 @@ function recupererTemperatureExterne(): ?float {
     $response = curl_exec($ch);
 
     if (curl_errno($ch)) {
-        error_log('Erreur cURL : ' . curl_error($ch));
+        trigger_error('Erreur cURL : ' . curl_error($ch));
         curl_close($ch);
         return null;
     }
     curl_close($ch);
 
     $weather_data = json_decode($response, true);
-    
+
     if (json_last_error() === JSON_ERROR_NONE && isset($weather_data['current_weather']['temperature'])) {
         return $weather_data['current_weather']['temperature'];
     }
@@ -128,12 +161,21 @@ function recupererTemperatureExterne(): ?float {
  * Récupère un jeu de données détaillé pour le tableau de bord personnel (accueil.php).
  */
 function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
+    if (!is_valid_table($nomTable)) {
+        trigger_error("Nom de table non autorisé pour données détaillées : {$nomTable}");
+        return ['live' => null, 'stats24h' => null, 'alerts' => [], 'history' => []];
+    }
+
     $schema = get_table_schema($nomTable);
     if (!$schema) {
-        error_log("Schéma inconnu pour la table lors de la récupération des données détaillées : {$nomTable}");
-        return [ 'live' => null, 'stats24h' => null, 'alerts' => [], 'history' => [] ];
+        trigger_error("Schéma inconnu pour la table lors de la récupération des données détaillées : {$nomTable}");
+        return ['live' => null, 'stats24h' => null, 'alerts' => [], 'history' => []];
     }
-    
+
+    if ($nomTable === 'capteur_temp_hum') {
+        return ['live' => null, 'stats24h' => null, 'alerts' => [], 'history' => []];
+    }
+
     $colonneValeur = $schema['valeur'];
     $colonneTemps = $schema['temps'];
     $nomTableSecurise = "`" . str_replace("`", "", $nomTable) . "`";
@@ -150,14 +192,14 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         $statement->execute();
         $data24h = $statement->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        error_log("Erreur SQL pour données détaillées de {$nomTable}: " . $e->getMessage());
-        return [ 'live' => null, 'stats24h' => null, 'alerts' => [], 'history' => [] ];
+        trigger_error("Erreur SQL pour données détaillées de {$nomTable}: " . $e->getMessage());
+        return ['live' => null, 'stats24h' => null, 'alerts' => [], 'history' => []];
     }
 
     if (empty($data24h)) {
-        return [ 'live' => null, 'stats24h' => null, 'alerts' => [], 'history' => [] ];
+        return ['live' => null, 'stats24h' => null, 'alerts' => [], 'history' => []];
     }
-    
+
     $valeurs24h = array_column($data24h, 'valeur');
     $stats24h = [
         'min' => round(min($valeurs24h), 1),

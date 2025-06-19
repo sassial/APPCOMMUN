@@ -29,7 +29,7 @@
             </div>
             
             <!-- Boucle dynamique pour les CAPTEURS ACTIFS -->
-            <?php foreach ($dispositifs_capteurs as $capteur):
+            <?php foreach ($dispositifs_capteurs as &$capteur):
                 $data = $donnees_capteurs[$capteur['id']] ?? null;
                 if (!$data) continue; // Ne pas afficher la carte si pas de données
             ?>
@@ -40,7 +40,7 @@
                     </div>
                     <div class="card-content">
                         <div class="card-stats">
-                            <?php if ($capteur['nom_table_bdd'] === 'CapteurTempHum'): ?>
+                            <?php if ($capteur['nom_table_bdd'] === 'capteur_temp_hum'): ?>
                                 <div class="stat-item"><p class="stat-value"><span id="val-<?= $capteur['id'] ?>-temp"><?= $data['latest']['temperature'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Actuelle</p></div>
                                 <div class="stat-item"><p class="stat-value"><span id="val-<?= $capteur['id'] ?>-hum"><?= $data['latest']['humidite'] ?? '--' ?></span><span class="unit">%</span></p><p class="stat-label">Humidité</p></div>
                                 <div class="stat-item"><p class="stat-value"><span id="val-<?= $capteur['id'] ?>-max"><?= $data['max_temp'] ?? '--' ?></span><span class="unit">°C</span></p><p class="stat-label">Temp. Max</p></div>

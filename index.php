@@ -1,30 +1,45 @@
 <?php
 // Fichier : APPCOMMUN/index.php
 
-// **TRÈS IMPORTANT** : Doit être la toute première instruction du script
 session_start(); 
 
-define('BASE_PATH', '/APPDEUX/APPCOMMUN');
+define('BASE_PATH', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/');
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+require_once __DIR__ . '/config.php';
 
-// On inclut uniquement les fonctions globales utiles
-include_once("controleurs/fonctions.php");
-
-// On identifie le contrôleur à appeler
-if (isset($_GET['cible']) && !empty($_GET['cible'])) {
-    $url = $_GET['cible'];
+if (defined('APP_ENV') && APP_ENV === 'development') {
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
 } else {
-    $url = 'utilisateurs'; // Page par défaut (mène au login)
+    ini_set('display_errors', 0);
 }
 
-// On appelle le contrôleur
-$controller_file = 'controleurs/' . $url . '.php';
+require_once __DIR__ . '/modele/connexion.php';
 
-if (file_exists($controller_file)) {
-    include($controller_file);
+try {
+    $bdd = getLocalPDO();
+    $bdd_commune = getCommunPDO();
+} catch (Exception $e) {
+    die('Impossible de se connecter à la base de données : ' . $e->getMessage());
+}
+
+require_once __DIR__ . '/controleurs/fonctions.php';
+
+$defaultController = 'utilisateurs';
+$controller = $defaultController;
+
+if (!empty($_GET['cible'])) {
+    $requested = preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['cible']);
+    if ($requested !== '') {
+        $controller = $requested;
+    }
+}
+
+$controllerFile = __DIR__ . '/controleurs/' . $controller . '.php';
+
+if (is_file($controllerFile) && is_readable($controllerFile)) {
+    include $controllerFile;
 } else {
-    // Si le contrôleur n'existe pas, on affiche une erreur 404
-    include('vues/erreur404.php');
+    http_response_code(404);
+    include __DIR__ . '/vues/erreur404.php';
 }
