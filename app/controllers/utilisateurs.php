@@ -50,43 +50,47 @@ switch ($function) {
 
     
     case 'inscription':
-        $vue = "utilisateurs/inscription";
-        if (!empty($_POST)) {
-            $prenom = nettoyerDonnees($_POST['prenom'] ?? '');
-            $nom = nettoyerDonnees($_POST['nom'] ?? '');
-            $email = nettoyerDonnees($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? '';
-            $confirm_password = $_POST['confirm_password'] ?? '';
-
-            if (strlen($password) < 6) {
-                $alerte = "Le mot de passe doit contenir au moins 6 caractères.";
-            } elseif ($password !== $confirm_password) {
-                $alerte = "Les mots de passe ne correspondent pas.";
-            } elseif (emailExiste($bdd, $email)) {
-                $alerte = "Cette adresse e-mail est déjà utilisée.";
-            } else {
-                $values = [
-                    'prenom'   => $prenom,
-                    'nom'      => $nom,
-                    'email'    => $email,
-                    'password' => crypterMdp($password)
+    $vue = "utilisateurs/inscription";
+    if (!empty($_POST)) {
+        $prenom = nettoyerDonnees($_POST['prenom'] ?? '');
+        $nom = nettoyerDonnees($_POST['nom'] ?? '');
+        $email = nettoyerDonnees($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+        $passwordValid = strlen($password) >= 8 &&
+                         preg_match('/[A-Z]/', $password) && 
+                         preg_match('/[a-z]/', $password) && 
+                         preg_match('/\d/', $password) && 
+                         preg_match('/[\W_]/', $password);
+        if (!$passwordValid) {
+            $alerte = "Le mot de passe doit contenir au moins 8 caractères, avec une majuscule, une minuscule, un chiffre et un caractère spécial.";
+        } elseif ($password !== $confirm_password) {
+            $alerte = "Les mots de passe ne correspondent pas.";
+        } elseif (emailExiste($bdd, $email)) {
+            $alerte = "Cette adresse e-mail est déjà utilisée.";
+        } else {
+            $values = [
+                'prenom'   => $prenom,
+                'nom'      => $nom,
+                'email'    => $email,
+                'password' => crypterMdp($password)
+            ];
+            $retour = ajouteUtilisateur($bdd, $values);
+            if ($retour) {
+                $nouvelUtilisateur = rechercheParEmail($bdd, $email);
+                $_SESSION['utilisateur'] = [
+                    'id' => $nouvelUtilisateur['id'],
+                    'prenom' => $nouvelUtilisateur['prenom'],
+                    'role' => 'utilisateur'
                 ];
-                $retour = ajouteUtilisateur($bdd, $values);
-                if ($retour) {
-                    $nouvelUtilisateur = rechercheParEmail($bdd, $email);
-                    $_SESSION['utilisateur'] = [
-                        'id' => $nouvelUtilisateur['id'],
-                        'prenom' => $nouvelUtilisateur['prenom'],
-                        'role' => 'utilisateur'
-                    ];
-                    header('Location: index.php?cible=capteurs&fonction=accueil');
-                    exit();
-                } else {
-                    $alerte = "Une erreur est survenue. L'inscription a échoué.";
-                }
+                header('Location: index.php?cible=capteurs&fonction=accueil');
+                exit();
+            } else {
+                $alerte = "Une erreur est survenue. L'inscription a échoué.";
             }
         }
-        break;
+    }
+    break;
 
     case 'forgot_password':
         $vue = "utilisateurs/mdpoublie";

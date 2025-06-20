@@ -7,7 +7,7 @@
       <ul>
         <?php if (isset($_SESSION['utilisateur'])): ?>
             <!--   MENU POUR UTILISATEUR CONNECTÉ -->
-            <li><a href="#">Bienvenue, <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?></a></li>
+            <li><strong><span style="color: gold;">Bienvenue, <?= htmlspecialchars($_SESSION['utilisateur']['prenom']) ?></span></strong></li>
             <li><a href="<?= BASE_PATH ?>index.php?cible=capteurs&fonction=accueil#capteur">Capteur son</a></li>
             <li><a href="<?= BASE_PATH ?>index.php?cible=capteurs&fonction=affichage">Autres capteurs</a></li>
             <li><a href="<?= BASE_PATH ?>index.php?cible=capteurs&fonction=gestion">Gestion</a></li>

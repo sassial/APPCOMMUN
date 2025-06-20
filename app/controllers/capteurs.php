@@ -44,15 +44,21 @@ switch ($function) {
         $vue = "capteurs/accueil";
         break;
 
-    case 'gestion':        
-        // Préparation des données pour la vue de gestion
+    case 'gestion':
+        if (isset($_GET['action']) && $_GET['action'] === 'toggle' && isset($_POST['id'])) {
+            $id = (int) $_POST['id'];
+            basculerEtat($bdd, $id);
+        }
+
+        // Always reload the updated lists
         $capteursActifs = listerDispositifsParEtat($bdd, 'capteur', true);
         $capteursInactifs = listerDispositifsParEtat($bdd, 'capteur', false);
         $actionneursActifs = listerDispositifsParEtat($bdd, 'actionneur', true);
         $actionneursInactifs = listerDispositifsParEtat($bdd, 'actionneur', false);
-        
+
         $vue = "capteurs/gestion";
         break;
+
     
     case 'affichage':
         // Préparation des données pour la vue du tableau de bord

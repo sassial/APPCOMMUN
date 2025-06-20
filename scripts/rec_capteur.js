@@ -17,7 +17,7 @@ const CLEANUP_CONFIG = {
   keepDays: 30,
   
   // Option 2: Keep only X most recent records
-  maxRecords: 1000,
+  maxRecords: 3000,
   
   // How often to run cleanup (every X new records)
   cleanupInterval: 100,
