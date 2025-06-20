@@ -1,1 +1,42 @@
+# Node modules
+node_modules/
+
+# Composer vendor directory (PHP dependencies)
+vendor/
+
+# Environment files with sensitive data
+.env
+.env.local
+.env.*.local
+
+# OS-specific files
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# IDE/project settings
+.idea/
+.vscode/
+
+# Cache and build folders (add more if you have)
+cache/
+build/
+dist/
+
+# Composer lock file (optional to ignore)
+composer.lock
+
+# Temporary or backup files
+*.php~
+*.php.cache
+
+# Test coverage reports
+coverage/
+*.cover
+
+# Ignore node debug logs and npm debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

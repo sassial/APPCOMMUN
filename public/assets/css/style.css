@@ -427,8 +427,8 @@ input:checked + .slider:before { transform: translateX(26px); }
 .stats-container { display: flex; justify-content: space-around; text-align: center; }
 .stat-item-perso .stat-label { display: block; font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; }
 .stat-item-perso .stat-value { font-size: 1.75rem; font-weight: 600; color: var(--navy); }
-.chart-card h4, .alerts-card h3 { min-height: 160px; max-height: none; overflow-y: visible; height: 100%; font-size: 1.2rem; font-weight: 600; color: var(--navy); margin-bottom: 1rem; }
-.chart-container-perso { height: 280px; }
+.chart-container-perso { height: 280px; position: relative; overflow: hidden; width: 100%; }
+.chart-container-perso canvas { display: block; height: 100%; width: 100%; box-sizing: border-box; }
 .alerts-list { list-style: none; padding: 0; margin: 0; }
 .alerts-list li { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid #edf2f7; }
 .alerts-list li:last-child { border-bottom: none; }

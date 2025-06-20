@@ -1,11 +1,10 @@
 <?php
-// Fichier : controleurs/fonctions.php (CORRIGÉ ET FINALISÉ)
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once(__DIR__ . '/../config.php');
-require_once(__DIR__ . '/../vendor/autoload.php');
+require_once(__DIR__ . '/../config/config.php');
+require_once(__DIR__ . '/../../vendor/autoload.php');
 
 function crypterMdp(string $password): string {
     return password_hash($password, PASSWORD_BCRYPT);
@@ -73,13 +72,10 @@ function verifierTokenReset(string $token): ?array {
 
 function envoyerEmailReset(string $email_destinataire, string $token): bool {
     $mail = new PHPMailer(true);
-   // LIGNE CORRIGÉE
-// DANS : controleurs/fonctions.php
 
-// LA MEILLEURE SOLUTION (plus robuste)
-$host = $_SERVER['HTTP_HOST']; // Récupère 'localhost' ou votre domaine
-$base_path = BASE_PATH;       // Utilise la constante globale que nous avons déjà corrigée
-$reset_link = "http://{$host}{$base_path}/index.php?cible=utilisateurs&fonction=reset_password&token=" . urlencode($token);
+    $host = $_SERVER['HTTP_HOST']; // Récupère 'localhost' ou votre domaine
+    $base_path = BASE_PATH;       // Utilise la constante globale que nous avons déjà corrigée
+    $reset_link = "http://{$host}{$base_path}/index.php?cible=utilisateurs&fonction=reset_password&token=" . urlencode($token);
 
     try {
         // --- Activation du mode débogage pour trouver le problème ---
@@ -112,4 +108,18 @@ $reset_link = "http://{$host}{$base_path}/index.php?cible=utilisateurs&fonction=
         error_log("Email Reset Erreur: {$mail->ErrorInfo}");
         return false;
     }
-} // <--- C'EST CETTE ACCOLADE QUI MANQUAIT !
+}
+
+function getEcoStatus($value, $type) {
+    if ($type === 'energy') {
+        if ($value <= 100) return ['label' => 'Excellent', 'emoji' => '✅'];
+        if ($value <= 300) return ['label' => 'Correct', 'emoji' => '🟡'];
+        return ['label' => 'À améliorer', 'emoji' => '🔴'];
+    }
+    if ($type === 'carbon') {
+        if ($value <= 50) return ['label' => 'Très faible', 'emoji' => '✅'];
+        if ($value <= 150) return ['label' => 'Moyen', 'emoji' => '🟡'];
+        return ['label' => 'Élevé', 'emoji' => '🔴'];
+    }
+    return ['label' => '--', 'emoji' => ''];
+}

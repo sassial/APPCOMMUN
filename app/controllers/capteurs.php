@@ -1,18 +1,14 @@
 <?php
-// Fichier: controleurs/capteurs.php (Version finale et propre)
 
-// --- 1. Inclusions des modèles nécessaires ---
-require_once(__DIR__ . '/../modele/requetes.capteurs.php');  // Fonctions pour lire les données des capteurs
-require_once(__DIR__ . '/../modele/requetes.gestion.php');   // Fonctions pour la page de gestion
+require_once __DIR__ . '/../models/requetes.capteurs.php';
+require_once __DIR__ . '/../models/requetes.gestion.php';
 
-// --- 2. Vérification de la session utilisateur ---
 // Personne non connectée ne peut accéder à cette section.
 if (!isset($_SESSION['utilisateur'])) {
     header('Location: index.php?cible=utilisateurs&fonction=login');
     exit();
 }
 
-// --- 3. Traitement des actions POST (depuis la page de gestion) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Seul un admin peut effectuer des modifications.
     if (isset($_SESSION['utilisateur']['role']) && $_SESSION['utilisateur']['role'] === 'admin' && isset($_POST['id'])) {
@@ -28,10 +24,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// --- 4. Routage GET pour afficher la bonne page ---
 $function = $_GET['fonction'] ?? 'affichage';
 
 switch ($function) {
+    case 'accueil':
+        // Protège la page : si personne n'est connecté, on renvoie au login.
+        if (!isset($_SESSION['utilisateur'])) {
+            header('Location: index.php?cible=utilisateurs&fonction=login');
+            exit();
+        }
+        // Récupère les données pour le dashboard personnel sur la page d'accueil.
+        $donneesSonDetaillees = recupererDonneesDetaillees($bdd_commune, 'CapteurSon');
+
+        $greenframePath = realpath(__DIR__ . '/../../public/assets/data/donnees-greenframe.json');
+        $greenframeData = file_exists($greenframePath) ? json_decode(file_get_contents($greenframePath), true) : null;
+        $ecoEnergy = getEcoStatus($greenframeData['energy'] ?? 0, 'energy');
+        $ecoCarbon = getEcoStatus($greenframeData['carbon'] ?? 0, 'carbon');
+
+        $vue = "capteurs/accueil";
+        break;
+
     case 'gestion':        
         // Préparation des données pour la vue de gestion
         $capteursActifs = listerDispositifsParEtat($bdd, 'capteur', true);
@@ -39,7 +51,7 @@ switch ($function) {
         $actionneursActifs = listerDispositifsParEtat($bdd, 'actionneur', true);
         $actionneursInactifs = listerDispositifsParEtat($bdd, 'actionneur', false);
         
-        $vue = "gestion";
+        $vue = "capteurs/gestion";
         break;
     
     case 'affichage':
@@ -67,7 +79,7 @@ switch ($function) {
         // d) On récupère les données du service web externe
         $temperatureExterne = recupererTemperatureExterne();
         
-        $vue = "affichage";
+        $vue = "capteurs/affichage";
         break;
         
     default:
@@ -75,4 +87,4 @@ switch ($function) {
         break;
 }
 
-require_once(__DIR__ . '/../vues/' . $vue . '.php');
+require_once(__DIR__ . '/../views/' . $vue . '.php');

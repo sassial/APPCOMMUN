@@ -5,7 +5,7 @@ session_start();
 
 define('BASE_PATH', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\') . '/');
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../app/config/config.php';
 
 if (defined('APP_ENV') && APP_ENV === 'development') {
     ini_set('display_errors', 1);
@@ -14,7 +14,7 @@ if (defined('APP_ENV') && APP_ENV === 'development') {
     ini_set('display_errors', 0);
 }
 
-require_once __DIR__ . '/modele/connexion.php';
+require_once __DIR__ . '/../app/models/connexion.php';
 
 try {
     $bdd = getLocalPDO();
@@ -23,7 +23,7 @@ try {
     die('Impossible de se connecter à la base de données : ' . $e->getMessage());
 }
 
-require_once __DIR__ . '/controleurs/fonctions.php';
+require_once __DIR__ . '/../app/controllers/fonctions.php';
 
 $defaultController = 'utilisateurs';
 $controller = $defaultController;
@@ -35,11 +35,12 @@ if (!empty($_GET['cible'])) {
     }
 }
 
-$controllerFile = __DIR__ . '/controleurs/' . $controller . '.php';
+$controllerFile = __DIR__ . '/../app/controllers/' . $controller . '.php';
 
 if (is_file($controllerFile) && is_readable($controllerFile)) {
     include $controllerFile;
 } else {
     http_response_code(404);
-    include __DIR__ . '/vues/erreur404.php';
+    include __DIR__ . '/../app/views/erreur404.php';
 }
+?>

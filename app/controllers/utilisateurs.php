@@ -1,31 +1,20 @@
 <?php
 // Fichier : controleurs/utilisateurs.php (VERSION FINALE ET CORRIGÉE)
 
-require_once(__DIR__ . '/../modele/requetes.utilisateurs.php');
-require_once(__DIR__ . '/../modele/requetes.capteurs.php');
+require_once __DIR__ . '/../models/requetes.utilisateurs.php';
+require_once __DIR__ . '/../models/requetes.capteurs.php' ;
 
 $function = $_GET['fonction'] ?? 'login';
 
 // Si un utilisateur est déjà connecté, on le redirige vers l'accueil au lieu de lui montrer les pages de connexion ou d'inscription.
 if (isset($_SESSION['utilisateur']) && ($function === 'login' || $function === 'inscription')) {
-    header('Location: index.php?cible=utilisateurs&fonction=accueil');
+    header('Location: index.php?cible=capteurs&fonction=accueil');
     exit();
 }
 
 switch ($function) {
-    case 'accueil':
-        // Protège la page : si personne n'est connecté, on renvoie au login.
-        if (!isset($_SESSION['utilisateur'])) {
-            header('Location: index.php?cible=utilisateurs&fonction=login');
-            exit();
-        }
-        // Récupère les données pour le dashboard personnel sur la page d'accueil.
-        $donneesSonDetaillees = recupererDonneesDetaillees($bdd_commune, 'CapteurSon');
-        $vue = "accueil";
-        break;
-
     case 'login':
-        $vue = "login";
+        $vue = "utilisateurs/login";
         // On vérifie que les champs ne sont pas vides
         if (!empty($_POST['email']) && !empty($_POST['password'])) {
             
@@ -49,7 +38,7 @@ switch ($function) {
                     'prenom' => $utilisateur['prenom'],
                     'role' => $utilisateur['role']
                 ];
-                header('Location: index.php?cible=utilisateurs&fonction=accueil');
+                header('Location: index.php?cible=capteurs&fonction=accueil');
                 exit();
 
             } else {
@@ -61,7 +50,7 @@ switch ($function) {
 
     
     case 'inscription':
-        $vue = "inscription";
+        $vue = "utilisateurs/inscription";
         if (!empty($_POST)) {
             $prenom = nettoyerDonnees($_POST['prenom'] ?? '');
             $nom = nettoyerDonnees($_POST['nom'] ?? '');
@@ -90,7 +79,7 @@ switch ($function) {
                         'prenom' => $nouvelUtilisateur['prenom'],
                         'role' => 'utilisateur'
                     ];
-                    header('Location: index.php?cible=utilisateurs&fonction=accueil');
+                    header('Location: index.php?cible=capteurs&fonction=accueil');
                     exit();
                 } else {
                     $alerte = "Une erreur est survenue. L'inscription a échoué.";
@@ -100,7 +89,7 @@ switch ($function) {
         break;
 
     case 'forgot_password':
-        $vue = "forgot_password";
+        $vue = "utilisateurs/mdpoublie";
         if (!empty($_POST['email'])) {
             $email = nettoyerDonnees($_POST['email']);
             if (emailExiste($bdd, $email)) {
@@ -120,28 +109,28 @@ switch ($function) {
 
             if (!$data_token) {
                 $alerte = "Le lien de réinitialisation est invalide ou a expiré.";
-                $vue = "forgot_password";
+                $vue = "utilisateurs/mdpoublie";
             } elseif (strlen($password) < 6) {
                 $alerte = "Le mot de passe doit faire au moins 6 caractères.";
-                $vue = "reset_password";
+                $vue = "utilisateurs/mdpreinitialise";
             } elseif ($password !== $confirm_password) {
                 $alerte = "Les mots de passe ne correspondent pas.";
-                $vue = "reset_password";
+                $vue = "utilisateurs/mdpreinitialise";
             } else {
                 $email = $data_token['email'];
                 mettreAJourMotDePasse($bdd, $email, crypterMdp($password));
                
                 $alerte = "Votre mot de passe a été réinitialisé avec succès !";
-                $vue = "login";
+                $vue = "utilisateurs/login";
             }
         } elseif (!empty($_GET['token'])) {
             $token = $_GET['token'];
             $data_token = verifierTokenReset($token);
             if ($data_token) {
-                $vue = "reset_password";
+                $vue = "utilisateurs/mdpreinitialise";
             } else {
                 $alerte = "Le lien de réinitialisation est invalide ou a expiré.";
-                $vue = "forgot_password";
+                $vue = "utilisateurs/mdpoublie";
             }
         } else {
             header('Location: index.php?cible=utilisateurs&fonction=login');
@@ -160,4 +149,4 @@ switch ($function) {
         break;
 }
 
-require_once(__DIR__ . '/../vues/' . $vue . '.php');
+require_once __DIR__ . '/../views/' . $vue . '.php';

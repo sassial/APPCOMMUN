@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Réinitialiser le mot de passe – Gusteau’s</title>
-    <link rel="stylesheet" href="/APPCOMMUN/vues/style.css">
+    <link rel="stylesheet" href="/APPCOMMUN/public/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <?php include __DIR__ . '/header.php'; ?>
+    <?php include __DIR__ . '/../layouts/header.php'; ?>
     <main class="container">
         <section class="signup-card">
             <h1>Réinitialiser votre mot de passe</h1>
@@ -38,7 +38,7 @@
             </form>
         </section>
     </main>
-    <?php include __DIR__ . '/footer.php'; ?>
+    <?php include __DIR__ . '/../layouts/footer.php'; ?>
     <script>
         const form = document.querySelector('.signup-form');
         const password = document.getElementById('password');

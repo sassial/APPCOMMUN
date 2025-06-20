@@ -1,5 +1,4 @@
 <?php
-// Fichier : modele/requetes.capteurs.php (VERSION FINALE, PROPRE ET CORRIGÉE)
 
 /**
  * "Carte de traduction" pour les noms de colonnes incohérents de la BDD distante.
@@ -222,3 +221,4 @@ function recupererDonneesDetaillees(PDO $bdd, string $nomTable): array {
         'history'   => array_reverse($data24h)
     ];
 }
+

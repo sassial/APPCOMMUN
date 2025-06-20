@@ -42,18 +42,19 @@ function basculerEtat(PDO $bdd, int $id): void {
         $sql = "INSERT INTO etats_actionneurs (id_dispositif, etat)
                 VALUES (:id, 1)
                 ON DUPLICATE KEY UPDATE etat = IF(etat = 0, 1, 0)";
-
         $stmt = $bdd->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
 
-        if ($stmt->rowCount() === 0) {
-            error_log("Aucune modification d'état effectuée pour le dispositif ID $id.");
+        $errorInfo = $stmt->errorInfo();
+        if ($errorInfo[0] !== '00000') {
+            error_log("Erreur SQL dans basculerEtat pour id $id: {$errorInfo[2]}");
         }
     } catch (PDOException $e) {
-        error_log("Erreur basculerEtat : " . $e->getMessage());
+        error_log("Exception basculerEtat : " . $e->getMessage());
     }
 }
+
 
 /**
  * Récupère les seuils des capteurs.

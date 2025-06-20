@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "cors": "^2.8.5",
     "mysql2": "^3.14.1",
-    "serialport": "^13.0.0"
+    "serialport": "^13.0.0",
+    "ws": "^8.18.2"
   }
 }
